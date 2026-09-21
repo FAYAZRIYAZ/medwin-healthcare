@@ -7,6 +7,8 @@ frontend/dist/
 *.log
 backend/log/*
 backend/tmp/*
+backend/tmp/pids/
+backend/tmp/storage/
 backend/storage/*
 !backend/log/.keep
 !backend/tmp/.keep
