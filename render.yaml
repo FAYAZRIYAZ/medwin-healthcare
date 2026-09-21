@@ -1,27 +1,26 @@
 services:
   - type: web
-      name: medwin-api
-          runtime: ruby
-              plan: free
-                  rootDir: backend
-                      buildCommand: bundle install && bin/rails db:prepare && bin/rails db:seed
-                          startCommand: bundle exec puma -C config/puma.rb
-                              healthCheckPath: /doctors
-                                  envVars:
-                                        - key: RAILS_ENV
-                                                value: production
-                                                      - key: DATABASE_URL
-                                                              fromDatabase:
-                                                                        name: medwin-db
-                                                                                  property: connectionString
-                                                                                        - key: SECRET_KEY_BASE
-                                                                                                generateValue: true
-                                                                                                      - key: FRONTEND_ORIGINS
-                                                                                                              value: https://fayazriyaz.github.io
-                                                                                                              
-                                                                                                              databases:
-                                                                                                                - name: medwin-db
-                                                                                                                    plan: free
-                                                                                                                        databaseName: medwin_db
-                                                                                                                            user: medwin_db_user
-                                                                                                                            
+    name: medwin-api
+    runtime: ruby
+    plan: free
+    rootDir: backend
+    buildCommand: bundle install && bin/rails db:prepare && bin/rails db:seed
+    startCommand: bundle exec puma -C config/puma.rb
+    healthCheckPath: /doctors
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: medwin-db
+          property: connectionString
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: FRONTEND_ORIGINS
+        value: https://fayazriyaz.github.io
+
+databases:
+  - name: medwin-db
+    plan: free
+    databaseName: medwin_db
+    user: medwin_db_user
