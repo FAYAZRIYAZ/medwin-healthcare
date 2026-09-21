@@ -30,8 +30,12 @@ frontend/  React/Vite web application and PWA
 The app is already prepared for a simple free testing stack:
 
 - Frontend: Netlify or Cloudflare Pages (static React app)
+- Frontend alternative: GitHub Pages via `.github/workflows/deploy-pages.yml`
 - Backend: Render (Ruby on Rails API)
 - Mobile wrapper: Capacitor Android project generated locally for app packaging
+
+To enable GitHub Pages, open the repository's **Settings > Pages**, choose **GitHub Actions** as the source, and push to `main`. The public frontend URL will be:
+`https://fayazriyaz.github.io/medwin-healthcare/`
 
 Create the frontend build with `VITE_API_URL` pointing to the deployed backend URL, and set the backend env values in Render using the examples in `backend/.env.example` and `frontend/.env.example`.
 
