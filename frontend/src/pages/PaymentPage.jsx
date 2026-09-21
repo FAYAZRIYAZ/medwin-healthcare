@@ -45,7 +45,9 @@ export default function PaymentPage() {
         status: 'Pending'
       };
 
-      await API.post('/bookings', JSON.stringify(finalPayload));
+      await API.post('/bookings', new URLSearchParams(finalPayload), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
       navigate('/dashboard'); // Direct navigation so admin/user sees it instantly
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to submit payment. Please verify your connection.');

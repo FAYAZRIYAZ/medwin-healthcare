@@ -59,11 +59,11 @@ export default function PaymentGateway() {
     setProcessing(true);
     try {
       // Submits as Pending with 12-digit UTR attached for Admin verification
-      await API.post('/bookings', JSON.stringify({
+      await API.post('/bookings', new URLSearchParams({
         ...orderDetails.bookingPayload,
         payment_mode: `Online UPI [UTR: ${utrNumber.trim()}]`,
         status: 'Pending'
-      }));
+      }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
       setPaymentStatus('submitted');
     } catch (err) {
@@ -76,11 +76,11 @@ export default function PaymentGateway() {
   const handlePaymentCancel = async () => {
     setProcessing(true);
     try {
-      await API.post('/bookings', JSON.stringify({
+      await API.post('/bookings', new URLSearchParams({
         ...orderDetails.bookingPayload,
         payment_mode: 'Online UPI (Cancelled/Failed)',
         status: 'Rejected'
-      }));
+      }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
       setPaymentStatus('failed');
     } catch (err) {
       setErrorMsg('Error recording cancellation.');
