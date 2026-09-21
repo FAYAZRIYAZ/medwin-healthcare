@@ -74,8 +74,10 @@ export default function Dashboard({ onLogout }) {
     idToSend = idToSend.toString().replace(/\D/g, '');
 
     try {
-      await API.put(`/bookings/${idToSend}?status=${encodeURIComponent(newStatus)}`);
-      fetchBookings();
+      await API.put(`/bookings/${idToSend}`, new URLSearchParams({ status: newStatus }), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
+      await fetchBookings();
     } catch (err) {
       console.error('Update error:', err);
       setActionError(`Error updating status: ${err.response?.data?.error || err.message}`);

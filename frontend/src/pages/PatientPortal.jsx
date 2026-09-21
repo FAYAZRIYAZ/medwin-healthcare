@@ -138,7 +138,14 @@ export default function PatientPortal({ onLogout }) {
 
     setLoading(true);
     try {
-      await API.post('/bookings', { ...payload, payment_mode: 'Cash to Doctor on Visit', status: 'Pending' });
+      const bookingForm = new URLSearchParams({
+        ...payload,
+        payment_mode: 'Cash to Doctor on Visit',
+        status: 'Pending'
+      });
+      await API.post('/bookings', bookingForm, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      });
       alert(`Appointment confirmed with ${selectedDoctor.name}!`);
       fetchMyOrders();
       setSelectedMenu('my_orders');

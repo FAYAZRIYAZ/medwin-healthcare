@@ -70,8 +70,8 @@ class Api::V1::AuthController < ApplicationController
 
     user.password = password
     user.password_confirmation = password_confirmation
-    user.save!(validate: false)
     user.clear_otp!
+    user.save!(validate: false)
 
     token = JWT.encode({ user_id: user.id, exp: 7.days.from_now.to_i }, SECRET_KEY)
 

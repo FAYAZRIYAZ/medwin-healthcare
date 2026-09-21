@@ -55,7 +55,7 @@ For hosting, set `VITE_API_URL` in the frontend service. The backend uses `DATAB
 4. The patient submits the OTP and a password to `POST /complete_signup`.
 5. The backend checks the OTP, password confirmation, and expiry before returning a JWT.
 
-In development, the OTP is returned as `debug_otp` and written to the Rails log. Production must connect this flow to an approved email or SMS provider. Do not expose `debug_otp` in production.
+In development, the OTP is returned as `debug_otp` and written to the Rails log. For free hosted testing only, set `OTP_DEBUG=true` on the backend; the signup screen will display the test OTP. Disable this flag before real use and connect the flow to an approved email or SMS provider.
 
 ## 4. Main API Routes
 
@@ -109,7 +109,7 @@ The WhatsApp action opens a prefilled message. It does not send messages automat
 - Provide Rails `secret_key_base` securely.
 - Keep `backend/config/master.key` private.
 - Configure real email/SMS OTP delivery.
-- Remove development OTP responses and logs.
+- Disable `OTP_DEBUG` and remove development OTP responses and logs.
 - Replace development admin passwords.
 - Configure HTTPS and restrictive CORS origins.
 - Add server-side authorization for admin-only doctor, report, and booking actions.
