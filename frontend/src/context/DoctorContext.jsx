@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const DoctorContext = createContext();
 const STORAGE_KEY = 'medwin_master_doctors_list';
@@ -9,6 +9,7 @@ const INITIAL_DOCTORS = [
   { id: 'doc-3', name: 'Dr. Rajesh K. Patel', specialty: 'Cardiologist & Emergency Care', fee: 800, phone: '9700088990', timing: '05:00 PM - 09:00 PM' }
 ];
 
+/* eslint-disable react-refresh/only-export-components */
 export function DoctorProvider({ children }) {
   const [doctors, setDoctors] = useState(() => {
     try {
@@ -47,3 +48,4 @@ export function DoctorProvider({ children }) {
 export function useDoctors() {
   return useContext(DoctorContext);
 }
+/* eslint-enable react-refresh/only-export-components */

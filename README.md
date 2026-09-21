@@ -25,6 +25,16 @@ frontend/  React/Vite web application and PWA
 
 ## Quick Start
 
+### Free hosting setup
+
+The app is already prepared for a simple free testing stack:
+
+- Frontend: Netlify or Cloudflare Pages (static React app)
+- Backend: Render (Ruby on Rails API)
+- Mobile wrapper: Capacitor Android project generated locally for app packaging
+
+Create the frontend build with `VITE_API_URL` pointing to the deployed backend URL, and set the backend env values in Render using the examples in `backend/.env.example` and `frontend/.env.example`.
+
 ### Backend
 
 Requirements: Ruby, Bundler, PostgreSQL.

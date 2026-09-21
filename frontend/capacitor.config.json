@@ -1,0 +1,9 @@
+{
+  "appId": "com.medwin.healthcare",
+  "appName": "MEDWIN Healthcare",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}

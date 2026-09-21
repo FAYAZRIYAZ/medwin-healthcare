@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/client';
 
@@ -46,21 +46,21 @@ export default function PatientPortal({ onLogout }) {
 
   // Diagnostics State
   const [selectedLabTest, setSelectedLabTest] = useState(DIAGNOSTIC_TESTS[0]);
-  const [labSlot, setLabSlot] = useState('07:30 AM - Morning Fasting');
+  const [labSlot] = useState('07:30 AM - Morning Fasting');
   const [labPayMode, setLabPayMode] = useState('Online Pay');
 
   // Oxygen State
   const [activeCylinderTab, setActiveCylinderTab] = useState('rental');
   const [selectedRental, setSelectedRental] = useState(RENTAL_CYLINDERS[0]);
-  const [rentalDays, setRentalDays] = useState(7);
+  const [rentalDays] = useState(7);
   const [rentalPayMode, setRentalPayMode] = useState('Online Pay');
   const [selectedRefill, setSelectedRefill] = useState(REFILL_OPTIONS[0]);
   const [refillPayMode, setRefillPayMode] = useState('Online Pay');
 
   // Home Care State
   const [selectedHomeCare, setSelectedHomeCare] = useState(HOME_CARE_SERVICES[0]);
-  const [hcDays, setHcDays] = useState(7);
-  const [hcPurpose, setHcPurpose] = useState('Post-op recovery & daily vitals tracking');
+  const [hcDays] = useState(7);
+  const [hcPurpose] = useState('Post-op recovery & daily vitals tracking');
   const [hcPayMode, setHcPayMode] = useState('Online Pay');
 
   const [loading, setLoading] = useState(false);
@@ -81,6 +81,7 @@ export default function PatientPortal({ onLogout }) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     syncDoctors();
     const handleStorage = () => syncDoctors();
     window.addEventListener('storage', handleStorage);
@@ -105,9 +106,11 @@ export default function PatientPortal({ onLogout }) {
     }
   };
 
+  /* eslint-disable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect */
   useEffect(() => {
     fetchMyOrders();
   }, []);
+  /* eslint-enable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect */
 
   const handleDoctorSubmit = async (e) => {
     e.preventDefault();

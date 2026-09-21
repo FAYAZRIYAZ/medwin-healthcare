@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import API from '../api/client';
 
@@ -66,7 +66,7 @@ export default function PaymentGateway() {
       }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
 
       setPaymentStatus('submitted');
-    } catch (err) {
+    } catch {
       setErrorMsg('Failed to record transaction. Please try again.');
     } finally {
       setProcessing(false);
@@ -82,7 +82,7 @@ export default function PaymentGateway() {
         status: 'Rejected'
       }), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
       setPaymentStatus('failed');
-    } catch (err) {
+    } catch {
       setErrorMsg('Error recording cancellation.');
     } finally {
       setProcessing(false);

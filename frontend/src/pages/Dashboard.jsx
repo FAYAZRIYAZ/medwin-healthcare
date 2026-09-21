@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import API from '../api/client';
 
 const TODAY_DATE = new Date().toISOString().slice(0, 10);
@@ -27,7 +27,6 @@ export default function Dashboard({ onLogout }) {
     timing: '10:00 AM - 02:00 PM'
   });
 
-  const [utrModalOrder, setUtrModalOrder] = useState(null);
   const [actionError, setActionError] = useState('');
 
   const fetchBookings = async () => {
@@ -57,6 +56,7 @@ export default function Dashboard({ onLogout }) {
     }
   };
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     fetchBookings();
     fetchDoctors();
@@ -66,6 +66,7 @@ export default function Dashboard({ onLogout }) {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const handleUpdateStatus = async (orderOrId, newStatus) => {
     setActionError('');
@@ -82,11 +83,6 @@ export default function Dashboard({ onLogout }) {
   };
 
   const handleSelectChange = (order, newStatus) => {
-    const isOnline = (order.payment_mode || '').toLowerCase().includes('online') || (order.payment_mode || '').toLowerCase().includes('utr');
-    if (newStatus === 'Approved' && isOnline) {
-      setUtrModalOrder({ ...order, targetStatus: newStatus });
-      return;
-    }
     handleUpdateStatus(order, newStatus);
   };
 

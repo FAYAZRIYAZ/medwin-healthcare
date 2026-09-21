@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MEDWIN Healthcare</string>
+    <string name="title_activity_main">MEDWIN Healthcare</string>
+    <string name="package_name">com.medwin.healthcare</string>
+    <string name="custom_url_scheme">com.medwin.healthcare</string>
+</resources>
