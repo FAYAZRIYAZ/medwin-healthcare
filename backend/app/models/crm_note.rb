@@ -1,0 +1,2 @@
+class CrmNote < ApplicationRecord
+end

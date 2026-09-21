@@ -1,0 +1,142 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+@media (max-width: 900px) {
+  .admin-shell > header {
+    padding: 14px 18px !important;
+  }
+
+  .admin-shell > header > div:nth-child(2) {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .admin-shell > header > div:nth-child(2) button {
+    white-space: nowrap;
+  }
+
+  .admin-content {
+    padding: 18px !important;
+  }
+
+  .patient-sidebar {
+    width: 220px !important;
+    padding: 18px 12px !important;
+  }
+
+  .patient-content {
+    padding: 20px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-shell > header {
+    align-items: flex-start !important;
+  }
+
+  .admin-shell > header > div:first-child > div:last-child {
+    max-width: 210px;
+  }
+
+  .admin-shell > header > div:last-child {
+    width: 100%;
+  }
+
+  .admin-shell > header > div:last-child button {
+    flex: 1;
+  }
+
+  .admin-content {
+    padding: 14px !important;
+  }
+
+  .admin-content input[placeholder*='Search'] {
+    width: 100% !important;
+  }
+
+  .patient-shell {
+    display: block !important;
+  }
+
+  .patient-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    width: 100% !important;
+    padding: 12px !important;
+  }
+
+  .patient-sidebar > div:first-child > div:first-child {
+    margin-bottom: 10px !important;
+  }
+
+  .patient-sidebar > div:first-child > div:nth-child(2) {
+    display: none;
+  }
+
+  .patient-sidebar nav {
+    flex-direction: row !important;
+    overflow-x: auto;
+    gap: 6px !important;
+    padding-bottom: 2px;
+  }
+
+  .patient-sidebar nav button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 9px !important;
+    font-size: 11px !important;
+  }
+
+  .patient-sidebar > div:last-child {
+    display: none;
+  }
+
+  .patient-content {
+    padding: 16px !important;
+  }
+
+  .patient-content form {
+    padding: 16px !important;
+  }
+
+  .patient-content form > div[style*='grid-template-columns'] {
+    grid-template-columns: 1fr !important;
+  }
+
+  .patient-content h2 {
+    font-size: 20px !important;
+  }
+
+  .patient-content table {
+    min-width: 620px;
+  }
+}

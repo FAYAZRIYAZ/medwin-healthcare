@@ -1,0 +1,17 @@
+{
+  "name": "MEDWIN Healthcare",
+  "short_name": "MEDWIN",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0284c7",
+  "description": "MEDWIN healthcare, doctor booking, oxygen, nursing, diagnostics, and reports.",
+  "icons": [
+    {
+      "src": "/medwin-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
