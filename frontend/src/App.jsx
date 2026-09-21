@@ -21,7 +21,7 @@ export default function App() {
   };
 
   return (
-    <Router>
+    <Router basename="/medwin-healthcare">
       <Routes>
         {/* Auth Route */}
         <Route
