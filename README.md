@@ -51,6 +51,8 @@ Open `http://localhost:5173`.
 
 The frontend expects the API at `http://localhost:3003`. Change `frontend/src/api/client.js` when using another API host.
 
+For hosted deployment, set `VITE_API_URL` in the frontend environment. The backend includes a Render blueprint in `render.yaml`; set `DATABASE_URL`, `RAILS_MASTER_KEY`, `SECRET_KEY_BASE`, and `FRONTEND_ORIGINS` in the backend service. Safe variable templates are available in `frontend/.env.example` and `backend/.env.example`.
+
 ## Development Admin Accounts
 
 The seed script creates or repairs these development accounts:

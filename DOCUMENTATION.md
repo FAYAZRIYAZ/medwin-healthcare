@@ -39,6 +39,8 @@ npm run dev
 
 The application is available at `http://localhost:5173` and the API at `http://localhost:3003`.
 
+For hosting, set `VITE_API_URL` in the frontend service. The backend uses `DATABASE_URL` for managed PostgreSQL and `FRONTEND_ORIGINS` for CORS. See `render.yaml`, `frontend/.env.example`, and `backend/.env.example` for deployment templates.
+
 ## 3. Authentication
 
 ### Admin login

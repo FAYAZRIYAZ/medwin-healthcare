@@ -17,6 +17,7 @@ test:
 
 production:
   <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
   database: medwin_production
   username: <%= ENV["MEDWIN_DATABASE_USER"] %>
   password: <%= ENV["MEDWIN_DATABASE_PASSWORD"] %>

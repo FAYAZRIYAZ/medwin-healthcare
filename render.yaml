@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: medwin-api
+    runtime: ruby
+    rootDir: backend
+    buildCommand: bundle install && bin/rails db:prepare
+    startCommand: bundle exec puma -C config/puma.rb
+    healthCheckPath: /doctors
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      - key: FRONTEND_ORIGINS
+        sync: false
