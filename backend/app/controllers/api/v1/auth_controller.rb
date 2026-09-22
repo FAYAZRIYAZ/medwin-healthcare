@@ -33,7 +33,7 @@ class Api::V1::AuthController < ApplicationController
     otp = user.generate_otp!
 
     if phone && sms_otp_configured?
-      deliver_sms_otp!(phone: phone, otp: otp)
+      Msg91OtpSender.deliver!(phone: phone, otp: otp)
     elsif !ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"])
       return render json: { error: "Email OTP delivery is not configured. Use a phone number for signup." }, status: :unprocessable_entity
     end
@@ -98,9 +98,9 @@ class Api::V1::AuthController < ApplicationController
 
     otp = user.generate_otp!
     if sms_otp_configured?
-      deliver_sms_otp!(phone: phone, otp: otp)
+      Msg91OtpSender.deliver!(phone: phone, otp: otp)
     elsif !ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"])
-      raise TwoFactorOtpSender::DeliveryError, "SMS OTP is not configured. Add TWOFACTOR_API_KEY in Render."
+      raise Msg91OtpSender::DeliveryError, "SMS OTP is not configured. Add MSG91_AUTH_KEY and MSG91_TEMPLATE_ID."
     end
 
     render json: {
@@ -137,23 +137,7 @@ class Api::V1::AuthController < ApplicationController
   end
 
   def sms_otp_configured?
-    two_factor_configured? || msg91_configured?
-  end
-
-  def two_factor_configured?
-    ENV["TWOFACTOR_API_KEY"].present?
-  end
-
-  def msg91_configured?
     ENV["MSG91_AUTH_KEY"].present? && ENV["MSG91_TEMPLATE_ID"].present?
-  end
-
-  def deliver_sms_otp!(phone:, otp:)
-    if two_factor_configured?
-      TwoFactorOtpSender.deliver!(phone: phone, otp: otp)
-    else
-      Msg91OtpSender.deliver!(phone: phone, otp: otp)
-    end
   end
 
   # POST /api/v1/login
