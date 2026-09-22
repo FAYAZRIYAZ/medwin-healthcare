@@ -17,7 +17,7 @@ services:
       - key: SECRET_KEY_BASE
         generateValue: true
       - key: FRONTEND_ORIGINS
-        value: https://fayazriyaz.github.io
+        value: https://fayazriyaz.github.io,capacitor://localhost,http://localhost
       - key: MSG91_AUTH_KEY
         sync: false
       - key: MSG91_TEMPLATE_ID
