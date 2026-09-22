@@ -5,6 +5,7 @@ import API from '../api/client';
 export default function Login({ setAuth }) {
   const [activeTab, setActiveTab] = useState('patient-signin');
   const [signupStep, setSignupStep] = useState(1);
+  const [forgotStep, setForgotStep] = useState(1);
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -25,11 +26,60 @@ export default function Login({ setAuth }) {
   const switchTab = (tab) => {
     setActiveTab(tab);
     setSignupStep(1);
+    setForgotStep(1);
     setError('');
     setStatusMessage('');
     setPassword('');
     setPasswordConfirm('');
     setOtp('');
+  };
+
+  const handleRequestPasswordResetOtp = async (e) => {
+    e.preventDefault();
+    setError('');
+    setStatusMessage('');
+    setLoading(true);
+    try {
+      const response = await API.post('/send_password_reset_otp', { identifier: phone.trim() });
+      setStatusMessage(response.data.message);
+      setForgotStep(2);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Could not send password reset OTP.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setError('');
+    if (!isPasswordValid(password)) {
+      setError('Password must have >= 8 chars with letters, numbers, and symbols.');
+      return;
+    }
+    if (password !== passwordConfirm) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await API.post('/reset_password', {
+        identifier: phone.trim(),
+        otp: otp.trim(),
+        password,
+        password_confirmation: passwordConfirm
+      });
+      setStatusMessage('Password reset successfully. Please sign in.');
+      setPassword('');
+      setPasswordConfirm('');
+      setOtp('');
+      setForgotStep(1);
+      setActiveTab('patient-signin');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Could not reset password.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePatientSignIn = async (e) => {
@@ -90,9 +140,7 @@ export default function Login({ setAuth }) {
         identifier: (activeTab === 'patient-signup' ? email : phone).trim()
       });
 
-      let msg = response.data.message;
-      if (response.data.debug_otp) msg += ` (Dev OTP: ${response.data.debug_otp})`;
-      setStatusMessage(msg);
+      setStatusMessage(response.data.message);
       setSignupStep(2);
     } catch (err) {
       setError(err.response?.data?.error || 'Could not send verification OTP.');
@@ -231,6 +279,43 @@ export default function Login({ setAuth }) {
             </div>
             <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', background: '#0284c7', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
               {loading ? 'Signing In...' : 'Sign In with Phone ➔'}
+            </button>
+            <button type="button" onClick={() => { setActiveTab('forgot-password'); setError(''); setStatusMessage(''); }} style={{ width: '100%', marginTop: '10px', padding: '8px', background: 'transparent', color: '#0284c7', border: 'none', fontSize: '13px', cursor: 'pointer' }}>
+              Forgot password?
+            </button>
+          </form>
+        )}
+
+        {activeTab === 'forgot-password' && forgotStep === 1 && (
+          <form onSubmit={handleRequestPasswordResetOtp}>
+            <div style={{ marginBottom: '16px', color: '#475569', fontSize: '13px' }}>We will send a password reset OTP to your registered mobile number.</div>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>Registered Mobile Number</label>
+              <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. 9848011223" style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }} />
+            </div>
+            <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', background: '#0284c7', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+              {loading ? 'Sending OTP...' : 'Send Reset OTP ➔'}
+            </button>
+            <button type="button" onClick={() => switchTab('patient-signin')} style={{ width: '100%', marginTop: '10px', padding: '8px', background: 'transparent', color: '#64748b', border: 'none', fontSize: '13px', cursor: 'pointer' }}>← Back to sign in</button>
+          </form>
+        )}
+
+        {activeTab === 'forgot-password' && forgotStep === 2 && (
+          <form onSubmit={handleResetPassword}>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', fontWeight: 600, color: '#334155', textAlign: 'center' }}>Enter the OTP sent to {phone}</label>
+              <input type="text" required maxLength="6" value={otp} onChange={(e) => setOtp(e.target.value)} placeholder="123456" autoFocus style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '2px solid #0284c7', fontSize: '18px', textAlign: 'center', letterSpacing: '6px', boxSizing: 'border-box', fontWeight: 'bold' }} />
+            </div>
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>New Password</label>
+              <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min 8 chars (Letter + Number + Symbol)" style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }} />
+            </div>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '4px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>Confirm New Password</label>
+              <input type="password" required value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} placeholder="Re-enter password" style={{ width: '100%', padding: '10px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', boxSizing: 'border-box' }} />
+            </div>
+            <button type="submit" disabled={loading || otp.length < 6 || !isPasswordValid(password)} style={{ width: '100%', padding: '12px', background: (otp.length === 6 && isPasswordValid(password)) ? '#0284c7' : '#94a3b8', color: '#ffffff', border: 'none', borderRadius: '6px', fontSize: '14px', fontWeight: 600, cursor: (otp.length === 6 && isPasswordValid(password)) ? 'pointer' : 'not-allowed' }}>
+              {loading ? 'Resetting...' : 'Reset Password'}
             </button>
           </form>
         )}

@@ -39,8 +39,7 @@ class Api::V1::AuthController < ApplicationController
     end
 
     render json: {
-      message: "Verification OTP sent to #{identifier}.",
-      debug_otp: (otp if ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"]) && !phone)
+      message: "Verification OTP sent to #{identifier}."
     }, status: :ok
   rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
@@ -81,6 +80,52 @@ class Api::V1::AuthController < ApplicationController
       token: token,
       user: { id: user.id, name: user.name, phone: user.phone, role: user.role }
     }, status: :created
+  rescue StandardError => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  # POST /send_password_reset_otp
+  def send_password_reset_otp
+    identifier = parsed_body[:identifier].to_s.strip
+    phone = identifier.gsub(/\s+/, "")
+    unless phone.match?(/\A\+?[0-9]{10,15}\z/)
+      return render json: { error: "Enter the mobile number used for signup." }, status: :bad_request
+    end
+
+    user = User.find_by(phone: phone)
+    return render json: { error: "No account was found for this mobile number." }, status: :not_found unless user
+
+    otp = user.generate_otp!
+    Msg91OtpSender.deliver!(phone: phone, otp: otp)
+
+    render json: {
+      message: "Password reset OTP sent to #{identifier}."
+    }, status: :ok
+  rescue StandardError => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  # POST /reset_password
+  def reset_password
+    data = parsed_body
+    phone = data[:identifier].to_s.strip.gsub(/\s+/, "")
+    otp = data[:otp].to_s.strip
+    password = data[:password].to_s
+    password_confirmation = data[:password_confirmation].to_s
+    user = User.find_by(phone: phone)
+
+    return render json: { error: "No account was found for this mobile number." }, status: :not_found unless user
+    return render json: { error: "Invalid or expired OTP code." }, status: :unauthorized unless user.valid_otp?(otp)
+    return render json: { error: "Passwords do not match." }, status: :unprocessable_entity unless password == password_confirmation
+
+    user.password = password
+    user.password_confirmation = password_confirmation
+    user.clear_otp!
+    user.save!
+
+    render json: { message: "Password reset successfully. You can now sign in." }, status: :ok
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.record.errors.full_messages.join(", ") }, status: :unprocessable_entity
   rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
   end

@@ -57,6 +57,8 @@ For hosting, set `VITE_API_URL` in the frontend service. The backend uses `DATAB
 
 In development, the OTP is returned as `debug_otp` and written to the Rails log. For free hosted testing only, set `OTP_DEBUG=true` on the backend; the signup screen will display the test OTP. For real phone signup, configure `MSG91_AUTH_KEY` and `MSG91_TEMPLATE_ID` on the backend and use an approved MSG91 OTP template. Disable `OTP_DEBUG` before real use.
 
+Completed patient accounts cannot sign up again with the same phone number. Patients who forget their password can select **Forgot password?** on the login screen, receive a new SMS OTP through MSG91, and set a new password after verification.
+
 ## 4. Main API Routes
 
 | Method | Route | Purpose |
