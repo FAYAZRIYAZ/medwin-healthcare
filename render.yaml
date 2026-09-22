@@ -18,6 +18,8 @@ services:
         generateValue: true
       - key: FRONTEND_ORIGINS
         value: https://fayazriyaz.github.io,capacitor://localhost,http://localhost
+      - key: OTP_DEBUG
+        value: "true",capacitor://localhost,http://localhost
       - key: MSG91_AUTH_KEY
         sync: false
       - key: MSG91_TEMPLATE_ID

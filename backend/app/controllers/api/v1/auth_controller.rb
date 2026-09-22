@@ -32,14 +32,15 @@ class Api::V1::AuthController < ApplicationController
 
     otp = user.generate_otp!
 
-    if phone
+    if phone && sms_otp_configured?
       Msg91OtpSender.deliver!(phone: phone, otp: otp)
     elsif !ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"])
       return render json: { error: "Email OTP delivery is not configured. Use a phone number for signup." }, status: :unprocessable_entity
     end
 
     render json: {
-      message: "Verification OTP sent to #{identifier}."
+      message: "Verification OTP sent to #{identifier}.",
+      debug_otp: (otp if ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"]))
     }, status: :ok
   rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
@@ -96,10 +97,15 @@ class Api::V1::AuthController < ApplicationController
     return render json: { error: "No account was found for this mobile number." }, status: :not_found unless user
 
     otp = user.generate_otp!
-    Msg91OtpSender.deliver!(phone: phone, otp: otp)
+    if sms_otp_configured?
+      Msg91OtpSender.deliver!(phone: phone, otp: otp)
+    elsif !ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"])
+      raise Msg91OtpSender::DeliveryError, "SMS OTP is not configured. Add MSG91_AUTH_KEY and MSG91_TEMPLATE_ID."
+    end
 
     render json: {
-      message: "Password reset OTP sent to #{identifier}."
+      message: "Password reset OTP sent to #{identifier}.",
+      debug_otp: (otp if ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"]))
     }, status: :ok
   rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
@@ -128,6 +134,10 @@ class Api::V1::AuthController < ApplicationController
     render json: { error: e.record.errors.full_messages.join(", ") }, status: :unprocessable_entity
   rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  def sms_otp_configured?
+    ENV["MSG91_AUTH_KEY"].present? && ENV["MSG91_TEMPLATE_ID"].present?
   end
 
   # POST /api/v1/login

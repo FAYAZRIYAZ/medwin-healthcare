@@ -41,7 +41,9 @@ export default function Login({ setAuth }) {
     setLoading(true);
     try {
       const response = await API.post('/send_password_reset_otp', { identifier: phone.trim() });
-      setStatusMessage(response.data.message);
+      let msg = response.data.message;
+      if (response.data.debug_otp) msg += ` (Free test OTP: ${response.data.debug_otp})`;
+      setStatusMessage(msg);
       setForgotStep(2);
     } catch (err) {
       setError(err.response?.data?.error || 'Could not send password reset OTP.');
@@ -140,7 +142,9 @@ export default function Login({ setAuth }) {
         identifier: (activeTab === 'patient-signup' ? email : phone).trim()
       });
 
-      setStatusMessage(response.data.message);
+      let msg = response.data.message;
+      if (response.data.debug_otp) msg += ` (Free test OTP: ${response.data.debug_otp})`;
+      setStatusMessage(msg);
       setSignupStep(2);
     } catch (err) {
       setError(err.response?.data?.error || 'Could not send verification OTP.');
