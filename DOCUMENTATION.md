@@ -55,9 +55,17 @@ For hosting, set `VITE_API_URL` in the frontend service. The backend uses `DATAB
 4. The patient submits the OTP and a password to `POST /complete_signup`.
 5. The backend checks the OTP, password confirmation, and expiry before returning a JWT.
 
-In development, the OTP is returned as `debug_otp` and written to the Rails log. For free hosted testing only, set `OTP_DEBUG=true` on the backend; the signup screen will display the test OTP. For real phone signup, configure `MSG91_AUTH_KEY` and `MSG91_TEMPLATE_ID` on the backend and use an approved MSG91 OTP template. Disable `OTP_DEBUG` before real use.
+In development, the OTP is returned as `debug_otp` and written to the Rails log. For free hosted testing only, set `OTP_DEBUG=true` on the backend; the signup screen will display the test OTP. For real phone signup, configure `TWOFACTOR_API_KEY` on Render. The app sends through 2Factor first; MSG91 remains a fallback when `MSG91_AUTH_KEY` and `MSG91_TEMPLATE_ID` are configured. Disable `OTP_DEBUG` before real use.
 
-Completed patient accounts cannot sign up again with the same phone number. Patients who forget their password can select **Forgot password?** on the login screen, receive a new SMS OTP through MSG91, and set a new password after verification.
+Completed patient accounts cannot sign up again with the same phone number. Patients who forget their password can select **Forgot password?** on the login screen, receive a new SMS OTP through 2Factor, and set a new password after verification.
+
+### 2Factor setup
+
+1. Sign in at [2Factor](https://2factor.in/) and open the API/OTP dashboard.
+2. Copy the API key without posting it in chat, GitHub, or screenshots.
+3. In Render, open `medwin-api` → **Environment** and add `TWOFACTOR_API_KEY` with that value.
+4. If 2Factor gives you a custom approved template name, add it as `TWOFACTOR_OTP_TEMPLATE`; otherwise leave it unset so the API uses `AUTOGEN`.
+5. Set `OTP_DEBUG=false` for real SMS delivery, save changes, and redeploy.
 
 ## 4. Main API Routes
 
