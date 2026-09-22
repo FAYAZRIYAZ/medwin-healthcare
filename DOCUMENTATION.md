@@ -55,7 +55,7 @@ For hosting, set `VITE_API_URL` in the frontend service. The backend uses `DATAB
 4. The patient submits the OTP and a password to `POST /complete_signup`.
 5. The backend checks the OTP, password confirmation, and expiry before returning a JWT.
 
-In development, the OTP is returned as `debug_otp` and written to the Rails log. For free hosted testing only, set `OTP_DEBUG=true` on the backend; the signup screen will display the test OTP. Disable this flag before real use and connect the flow to an approved email or SMS provider.
+In development, the OTP is returned as `debug_otp` and written to the Rails log. For free hosted testing only, set `OTP_DEBUG=true` on the backend; the signup screen will display the test OTP. For real phone signup, configure `MSG91_AUTH_KEY` and `MSG91_TEMPLATE_ID` on the backend and use an approved MSG91 OTP template. Disable `OTP_DEBUG` before real use.
 
 ## 4. Main API Routes
 

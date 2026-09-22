@@ -32,13 +32,15 @@ class Api::V1::AuthController < ApplicationController
 
     otp = user.generate_otp!
 
-    Rails.logger.info("==========================================")
-    Rails.logger.info(" [MED-WIN PATIENT OTP] #{identifier} | OTP: #{otp}")
-    Rails.logger.info("==========================================")
+    if phone
+      Msg91OtpSender.deliver!(phone: phone, otp: otp)
+    elsif !ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"])
+      return render json: { error: "Email OTP delivery is not configured. Use a phone number for signup." }, status: :unprocessable_entity
+    end
 
     render json: {
       message: "Verification OTP sent to #{identifier}.",
-      debug_otp: (otp if ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"]))
+      debug_otp: (otp if ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"]) && !phone)
     }, status: :ok
   rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
