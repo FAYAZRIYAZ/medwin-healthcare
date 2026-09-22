@@ -271,10 +271,17 @@ export default function PatientPortal({ onLogout }) {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '22px' }}>
             <div style={{ width: '40px', height: '40px', background: '#0284c7', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px' }}>M+</div>
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '16px' }}>MEDWIN HEALTH</div>
               <div style={{ fontSize: '11px', color: '#38bdf8' }}>Hyderabad Home Care</div>
             </div>
+            <button
+              onClick={onLogout}
+              aria-label="Sign out"
+              style={{ background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '8px 10px', borderRadius: '6px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              Sign Out
+            </button>
           </div>
 
           <div style={{ background: '#1e293b', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>
@@ -316,11 +323,6 @@ export default function PatientPortal({ onLogout }) {
           </nav>
         </div>
 
-        <div>
-          <button onClick={onLogout} style={{ width: '100%', background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '10px', borderRadius: '6px', fontWeight: 700, cursor: 'pointer' }}>
-            Sign Out
-          </button>
-        </div>
       </aside>
 
       {/* Main Content */}

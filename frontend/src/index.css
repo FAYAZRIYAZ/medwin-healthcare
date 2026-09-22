@@ -116,10 +116,6 @@ textarea {
     font-size: 11px !important;
   }
 
-  .patient-sidebar > div:last-child {
-    display: none;
-  }
-
   .patient-content {
     padding: 16px !important;
   }
