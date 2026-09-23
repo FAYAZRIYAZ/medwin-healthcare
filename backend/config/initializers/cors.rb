@@ -6,6 +6,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       https://fayazriyaz.github.io
       https://medwin-healthcare.netlify.app
       capacitor://localhost
+      https://localhost
       http://localhost
       http://localhost:5173
       http://localhost:5174
