@@ -1,10 +1,18 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
+    configured_origins = ENV.fetch("FRONTEND_ORIGINS", "").split(",")
+    default_origins = %w[
+      https://fayazriyaz.github.io
+      https://medwin-healthcare.netlify.app
+      capacitor://localhost
+      http://localhost
+      http://localhost:5173
+      http://localhost:5174
+      http://127.0.0.1:5173
+      http://127.0.0.1:5174
+    ]
     origins(*(
-      ENV.fetch(
-        "FRONTEND_ORIGINS",
-        "https://fayazriyaz.github.io,capacitor://localhost,http://localhost,http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174"
-      ).split(",").map { |origin| origin.strip.sub(%r{\A(https?://[^/]+).*\z}, '\1') }
+      (default_origins + configured_origins).map { |origin| origin.strip.sub(%r{\A(https?://[^/]+).*\z}, '\1') }.reject(&:empty?).uniq
     ))
     resource "*",
       headers: :any,

@@ -1,9 +1,20 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  background-color: #f8fafc;
-  color: #0f172a;
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #12233f;
+  background: #f4f8fc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --ink: #12233f;
+  --muted: #61718a;
+  --primary: #087ea4;
+  --primary-dark: #06627f;
+  --primary-soft: #e8f6fa;
+  --navy: #10253f;
+  --surface: #ffffff;
+  --surface-muted: #f6f9fc;
+  --line: #dbe5ef;
+  --shadow-sm: 0 2px 8px rgba(16, 37, 63, 0.06);
+  --shadow-md: 0 12px 32px rgba(16, 37, 63, 0.1);
 }
 
 * {
@@ -18,7 +29,12 @@ body,
 }
 
 body {
+  margin: 0;
   overflow-x: hidden;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(8, 126, 164, 0.07), transparent 32rem),
+    #f4f8fc;
+  color: var(--ink);
 }
 
 button,
@@ -26,6 +42,139 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+button {
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(8, 126, 164, 0.24);
+  outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line) !important;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(8, 126, 164, 0.11);
+  outline: none;
+}
+
+.admin-shell,
+.patient-shell {
+  background: transparent !important;
+}
+
+.route-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--primary-dark);
+  font-size: 14px;
+  font-weight: 700;
+  background: #f4f8fc;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+.auth-screen,
+.payment-screen {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(8, 126, 164, 0.15), transparent 24rem),
+    radial-gradient(circle at 10% 90%, rgba(6, 98, 127, 0.1), transparent 22rem),
+    #f4f8fc !important;
+}
+
+.auth-screen > div,
+.payment-screen > div {
+  border: 1px solid rgba(219, 229, 239, 0.9) !important;
+  border-radius: 20px !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.auth-screen input,
+.payment-screen input {
+  min-height: 44px;
+}
+
+.auth-screen button[type="submit"],
+.payment-screen button[type="submit"] {
+  box-shadow: 0 8px 16px rgba(8, 126, 164, 0.18);
+}
+
+.admin-shell > header {
+  border-bottom-color: var(--line) !important;
+  box-shadow: 0 1px 0 rgba(16, 37, 63, 0.03), 0 8px 24px rgba(16, 37, 63, 0.04) !important;
+}
+
+.admin-shell > header > div:first-child > div:first-child,
+.patient-sidebar > div:first-child > div:first-child {
+  background: linear-gradient(135deg, #0a91b7, #06627f) !important;
+  box-shadow: 0 8px 16px rgba(8, 126, 164, 0.22);
+}
+
+.patient-sidebar {
+  background: linear-gradient(180deg, #10253f 0%, #0c1d33 100%) !important;
+  box-shadow: 8px 0 28px rgba(16, 37, 63, 0.08);
+}
+
+.patient-sidebar button[aria-label="Sign out"] {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #bdebf3 !important;
+  border: 1px solid rgba(189, 235, 243, 0.2) !important;
+}
+
+.patient-sidebar nav button {
+  border-left: 3px solid transparent !important;
+}
+
+.patient-sidebar nav button:hover,
+.patient-sidebar nav button[style*="#0284c7"] {
+  background: rgba(8, 126, 164, 0.22) !important;
+  border-left-color: #55d3e6 !important;
+  color: #ffffff !important;
+}
+
+.admin-content,
+.patient-content {
+  color: var(--ink);
+}
+
+.admin-content [style*="background: '#ffffff'"],
+.patient-content [style*="background: '#ffffff'"] {
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
 @media (max-width: 900px) {
@@ -44,16 +193,16 @@ textarea {
   }
 
   .admin-content {
-    padding: 18px !important;
+    padding: 20px !important;
   }
 
   .patient-sidebar {
-    width: 220px !important;
-    padding: 18px 12px !important;
+    width: 230px !important;
+    padding: 20px 14px !important;
   }
 
   .patient-content {
-    padding: 20px !important;
+    padding: 24px !important;
   }
 }
 
@@ -121,7 +270,7 @@ textarea {
   }
 
   .patient-content form {
-    padding: 16px !important;
+    padding: 18px !important;
   }
 
   .patient-content form > div[style*='grid-template-columns'] {

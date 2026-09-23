@@ -101,7 +101,11 @@ export default function Login({ setAuth }) {
       setAuth(true);
       navigate('/portal');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Check phone and password.');
+      setError(err.response?.data?.error || (
+        err.request && !err.response
+          ? 'Unable to reach the login service. Please check your connection and try again.'
+          : 'Login failed. Check phone and password.'
+      ));
     } finally {
       setLoading(false);
     }
@@ -124,7 +128,11 @@ export default function Login({ setAuth }) {
       setAuth(true);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Admin login failed.');
+      setError(err.response?.data?.error || (
+        err.request && !err.response
+          ? 'Unable to reach the login service. Please check your connection and try again.'
+          : 'Admin login failed.'
+      ));
     } finally {
       setLoading(false);
     }
@@ -189,7 +197,7 @@ export default function Login({ setAuth }) {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="auth-screen" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <div style={{ background: '#ffffff', padding: '32px', borderRadius: '12px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)', width: '100%', maxWidth: '420px' }}>
         
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>

@@ -58,7 +58,7 @@ export default function AuthPage({ onLoginSuccess }) {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '20px', fontFamily: 'system-ui, sans-serif' }}>
+    <div className="auth-screen" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: '20px', fontFamily: 'system-ui, sans-serif' }}>
       <div style={{ background: '#ffffff', borderRadius: '16px', maxWidth: '400px', width: '100%', padding: '32px 28px', border: '1px solid #e2e8f0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.08)' }}>
         
         {/* Brand */}
