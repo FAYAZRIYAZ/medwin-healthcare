@@ -30,6 +30,7 @@ export default function PatientPortal({ onLogout }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [selectedMenu, setSelectedMenu] = useState('doctors');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
@@ -270,7 +271,7 @@ export default function PatientPortal({ onLogout }) {
     <div className="patient-shell" style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       
       {/* Sidebar */}
-      <aside className="patient-sidebar" style={{ width: '270px', background: '#0f172a', color: '#fff', padding: '24px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <aside className={`patient-sidebar${mobileMenuOpen ? ' mobile-menu-open' : ''}`} style={{ width: '270px', background: '#0f172a', color: '#fff', padding: '24px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '22px' }}>
             <div style={{ width: '40px', height: '40px', background: '#0284c7', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px' }}>M+</div>
@@ -299,6 +300,7 @@ export default function PatientPortal({ onLogout }) {
                 key={t.id}
                 onClick={() => {
                   setSelectedMenu(t.id === 'home' ? 'doctors' : t.id);
+                  setMobileMenuOpen(false);
                   if (t.id === 'my_orders') fetchMyOrders();
                   if (t.id === 'doctors') syncDoctors();
                 }}
@@ -328,9 +330,18 @@ export default function PatientPortal({ onLogout }) {
           ↪&nbsp; Sign Out
         </button>
       </aside>
+      {mobileMenuOpen && <button className="mobile-menu-backdrop" aria-label="Close menu" onClick={() => setMobileMenuOpen(false)} />}
 
       {/* Main Content */}
       <main className="patient-content" style={{ flex: 1, padding: '28px', maxWidth: '1050px', margin: '0 auto', width: '100%' }}>
+        <button
+          type="button"
+          className="mobile-home-button"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Open home menu"
+        >
+          ☰ <span>Home</span>
+        </button>
         
         {/* DOCTORS SELECTION */}
         {selectedMenu === 'doctors' && (

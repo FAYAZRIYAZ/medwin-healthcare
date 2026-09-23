@@ -151,7 +151,10 @@ export default function Login({ setAuth }) {
       });
 
       let msg = response.data.message;
-      if (response.data.debug_otp) msg += ` (Free test OTP: ${response.data.debug_otp})`;
+      if (response.data.debug_otp) {
+        setOtp(response.data.debug_otp);
+        msg += ` Test OTP: ${response.data.debug_otp}`;
+      }
       setStatusMessage(msg);
       setSignupStep(2);
     } catch (err) {

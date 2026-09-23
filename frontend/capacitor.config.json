@@ -3,8 +3,5 @@
   "appName": "MEDWIN Healthcare",
   "webDir": "dist",
   "bundledWebRuntime": false,
-  "server": {
-    "androidScheme": "https",
-    "url": "https://fayazriyaz.github.io/medwin-healthcare/"
-  }
+  "androidScheme": "https"
 }

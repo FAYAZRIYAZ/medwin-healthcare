@@ -32,6 +32,8 @@ class Api::V1::AuthController < ApplicationController
 
     otp = user.generate_otp!
 
+    # In production, configure MSG91 for delivery. OTP_DEBUG keeps signup
+    # testable when the SMS provider is intentionally not configured.
     if phone && sms_otp_configured?
       Msg91OtpSender.deliver!(phone: phone, otp: otp)
     elsif !ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"])

@@ -6,6 +6,7 @@ const YESTERDAY_DATE = new Date(Date.now() - 86400000).toISOString().slice(0, 10
 
 export default function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('orders');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -183,7 +184,7 @@ export default function Dashboard({ onLogout }) {
   return (
     <div className="admin-shell" style={{ minHeight: '100vh', background: '#f8fafc', color: '#0f172a', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       
-      <header style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '16px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+      <header className={mobileMenuOpen ? 'admin-header mobile-menu-open' : 'admin-header'} style={{ background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '16px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{ width: '42px', height: '42px', background: '#0284c7', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px', color: '#fff' }}>M+</div>
           <div>
@@ -192,7 +193,7 @@ export default function Dashboard({ onLogout }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: '10px', gap: '4px', border: '1px solid #cbd5e1' }}>
+        <div className="admin-tabs" style={{ display: 'flex', background: '#f1f5f9', padding: '4px', borderRadius: '10px', gap: '4px', border: '1px solid #cbd5e1' }}>
           {[
             { id: 'orders', label: `📦 Dispatches (${bookings.length})` },
             { id: 'doctors', label: `👨‍⚕️ Doctors (${doctorsList.length})` },
@@ -201,7 +202,10 @@ export default function Dashboard({ onLogout }) {
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setMobileMenuOpen(false);
+              }}
               style={{
                 padding: '8px 16px',
                 borderRadius: '8px',
@@ -230,6 +234,15 @@ export default function Dashboard({ onLogout }) {
       </header>
 
       <main className="admin-content" style={{ padding: '24px 28px', maxWidth: '1480px', margin: '0 auto' }}>
+        <button
+          type="button"
+          className="admin-mobile-home"
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Open admin menu"
+        >
+          ☰ <span>Home</span>
+        </button>
+        {mobileMenuOpen && <button className="admin-menu-backdrop" aria-label="Close admin menu" onClick={() => setMobileMenuOpen(false)} />}
         
         {activeTab === 'orders' && (
           <div>
