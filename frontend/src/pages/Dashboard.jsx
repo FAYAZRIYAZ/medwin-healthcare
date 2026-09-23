@@ -11,6 +11,8 @@ export default function Dashboard({ onLogout }) {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [reportDate, setReportDate] = useState(TODAY_DATE);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
 
   const [doctorsList, setDoctorsList] = useState([]);
   const [showDoctorModal, setShowDoctorModal] = useState(false);
@@ -40,11 +42,18 @@ export default function Dashboard({ onLogout }) {
         });
         setBookings(sorted);
       }
+      setLastUpdated(new Date());
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshWorkspace = async () => {
+    setRefreshing(true);
+    await Promise.all([fetchBookings(), fetchDoctors()]);
+    setRefreshing(false);
   };
 
   const fetchDoctors = async () => {
@@ -212,7 +221,10 @@ export default function Dashboard({ onLogout }) {
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>
-                  <button onClick={() => { fetchBookings(); fetchDoctors(); }} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155', padding: '8px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}>🔄 Refresh</button>
+                  <button onClick={refreshWorkspace} disabled={refreshing} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#334155', padding: '8px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', cursor: refreshing ? 'wait' : 'pointer', opacity: refreshing ? 0.7 : 1 }}>
+                    {refreshing ? '⟳ Updating…' : '🔄 Refresh'}
+                  </button>
+                  {lastUpdated && <span style={{ alignSelf: 'center', color: '#64748b', fontSize: '11px' }}>Live · {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
           <button onClick={onLogout} style={{ background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecaca', padding: '8px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}>Sign Out</button>
         </div>
       </header>

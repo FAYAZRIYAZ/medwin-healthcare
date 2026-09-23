@@ -6,10 +6,10 @@
   text-rendering: optimizeLegibility;
   --ink: #12233f;
   --muted: #61718a;
-  --primary: #087ea4;
-  --primary-dark: #06627f;
-  --primary-soft: #e8f6fa;
-  --navy: #10253f;
+  --primary: #168c86;
+  --primary-dark: #0f625f;
+  --primary-soft: #e7f6f3;
+  --navy: #183b4a;
   --surface: #ffffff;
   --surface-muted: #f6f9fc;
   --line: #dbe5ef;
@@ -32,8 +32,8 @@ body {
   margin: 0;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 10% 0%, rgba(8, 126, 164, 0.07), transparent 32rem),
-    #f4f8fc;
+    radial-gradient(circle at 10% 0%, rgba(22, 140, 134, 0.08), transparent 32rem),
+    #f7fbfa;
   color: var(--ink);
 }
 
@@ -139,8 +139,63 @@ textarea:focus {
 }
 
 .patient-sidebar {
-  background: linear-gradient(180deg, #10253f 0%, #0c1d33 100%) !important;
-  box-shadow: 8px 0 28px rgba(16, 37, 63, 0.08);
+  background: linear-gradient(180deg, #183b4a 0%, #12313e 100%) !important;
+  box-shadow: 8px 0 28px rgba(24, 59, 74, 0.12);
+}
+
+.patient-sidebar > div:first-child > div:first-child {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.patient-sidebar > div:first-child > div:nth-child(2) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.patient-sidebar nav button {
+  color: #b8d1d3 !important;
+}
+
+.patient-sidebar nav button:hover,
+.patient-sidebar nav button[style*="#0284c7"] {
+  background: #168c86 !important;
+  border-left-color: #8de0d5 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 14px rgba(22, 140, 134, 0.2);
+}
+
+.patient-content {
+  background: #f7fbfa;
+}
+
+.patient-content h2,
+.patient-content h3,
+.patient-content h4 {
+  letter-spacing: -0.02em;
+}
+
+.patient-content [style*="background: '#ffffff'"] {
+  border-color: #d9e8e6 !important;
+  box-shadow: 0 8px 22px rgba(24, 59, 74, 0.06) !important;
+}
+
+.patient-content [style*="background: '#f8fafc'"] {
+  background: #f1f8f7 !important;
+  border-color: #d9e8e6 !important;
+}
+
+.patient-content [style*="color: '#0284c7'"] {
+  color: #168c86 !important;
+}
+
+.patient-content [style*="background: '#0284c7'"] {
+  background: #168c86 !important;
+}
+
+.patient-content [style*="border: '2.5px solid #0284c7'"] {
+  border-color: #168c86 !important;
+  box-shadow: 0 10px 24px rgba(22, 140, 134, 0.14) !important;
 }
 
 .patient-sidebar button[aria-label="Sign out"] {
@@ -155,8 +210,8 @@ textarea:focus {
 
 .patient-sidebar nav button:hover,
 .patient-sidebar nav button[style*="#0284c7"] {
-  background: rgba(8, 126, 164, 0.22) !important;
-  border-left-color: #55d3e6 !important;
+  background: rgba(116, 116, 240, 0.24) !important;
+  border-left-color: #a5b4fc !important;
   color: #ffffff !important;
 }
 

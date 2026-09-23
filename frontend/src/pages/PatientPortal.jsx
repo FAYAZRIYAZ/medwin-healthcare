@@ -33,6 +33,7 @@ export default function PatientPortal({ onLogout }) {
 
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [ordersError, setOrdersError] = useState('');
 
   const [patientName] = useState(user.name || 'Fayaz');
   const [phone, setPhone] = useState(user.phone || '9347832031');
@@ -94,6 +95,7 @@ export default function PatientPortal({ onLogout }) {
 
   const fetchMyOrders = async () => {
     setLoadingOrders(true);
+    setOrdersError('');
     try {
       const res = await API.get(`/bookings?phone=${encodeURIComponent(phone)}`);
       if (Array.isArray(res.data)) {
@@ -101,6 +103,7 @@ export default function PatientPortal({ onLogout }) {
       }
     } catch (err) {
       console.error(err);
+      setOrdersError('Bookings could not be loaded. Check your connection and try again.');
     } finally {
       setLoadingOrders(false);
     }
@@ -273,15 +276,8 @@ export default function PatientPortal({ onLogout }) {
             <div style={{ width: '40px', height: '40px', background: '#0284c7', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px' }}>M+</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 800, fontSize: '16px' }}>MEDWIN HEALTH</div>
-              <div style={{ fontSize: '11px', color: '#38bdf8' }}>Hyderabad Home Care</div>
+              <div style={{ fontSize: '11px', color: '#7dd3fc' }}>Hyderabad Home Care</div>
             </div>
-            <button
-              onClick={onLogout}
-              aria-label="Sign out"
-              style={{ background: '#fee2e2', color: '#b91c1c', border: 'none', padding: '8px 10px', borderRadius: '6px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              Sign Out
-            </button>
           </div>
 
           <div style={{ background: '#1e293b', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>
@@ -292,6 +288,7 @@ export default function PatientPortal({ onLogout }) {
 
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[
+              { id: 'home', icon: '⌂', label: 'Home' },
               { id: 'doctors', icon: '👨‍⚕️', label: 'Consult Available Doctors' },
               { id: 'oxygen', icon: '🫁', label: 'Oxygen Cylinder Rentals' },
               { id: 'homecare', icon: '🏠', label: 'Home Nursing Care' },
@@ -301,7 +298,7 @@ export default function PatientPortal({ onLogout }) {
               <button
                 key={t.id}
                 onClick={() => {
-                  setSelectedMenu(t.id);
+                  setSelectedMenu(t.id === 'home' ? 'doctors' : t.id);
                   if (t.id === 'my_orders') fetchMyOrders();
                   if (t.id === 'doctors') syncDoctors();
                 }}
@@ -323,6 +320,13 @@ export default function PatientPortal({ onLogout }) {
           </nav>
         </div>
 
+        <button
+          onClick={onLogout}
+          aria-label="Sign out"
+          style={{ width: '100%', background: 'rgba(248, 113, 113, 0.12)', color: '#fecaca', border: '1px solid rgba(248, 113, 113, 0.24)', padding: '11px 12px', borderRadius: '9px', fontWeight: 800, cursor: 'pointer', textAlign: 'left' }}
+        >
+          ↪&nbsp; Sign Out
+        </button>
       </aside>
 
       {/* Main Content */}
@@ -607,9 +611,16 @@ export default function PatientPortal({ onLogout }) {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
               <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 900 }}>Track Your Orders</h2>
-              <button onClick={fetchMyOrders} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '6px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}>🔄 Refresh</button>
+              <button onClick={fetchMyOrders} disabled={loadingOrders} style={{ background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '6px', fontWeight: 700, fontSize: '12px', cursor: loadingOrders ? 'wait' : 'pointer', opacity: loadingOrders ? 0.7 : 1 }}>
+                {loadingOrders ? '⟳ Loading…' : '🔄 Refresh'}
+              </button>
             </div>
-            {loadingOrders ? (
+            {ordersError ? (
+              <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', color: '#9a3412', padding: '18px', borderRadius: '10px', textAlign: 'center' }}>
+                <div style={{ fontWeight: 800, marginBottom: '8px' }}>{ordersError}</div>
+                <button onClick={fetchMyOrders} style={{ background: '#ea580c', border: 'none', color: '#fff', padding: '8px 14px', borderRadius: '7px', fontWeight: 700, cursor: 'pointer' }}>Try again</button>
+              </div>
+            ) : loadingOrders ? (
               <div>Loading records...</div>
             ) : myOrders.length === 0 ? (
               <div style={{ background: '#fff', padding: '30px', borderRadius: '12px', textAlign: 'center', border: '1px solid #cbd5e1' }}>No active bookings found.</div>
