@@ -27,7 +27,8 @@ const HOME_CARE_SERVICES = [
 ];
 
 const submitBooking = (payload) => API.post('/bookings', new URLSearchParams(payload), {
-  headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+  transformRequest: [(data) => data.toString()]
 });
 
 const getBookingError = (err) => {
