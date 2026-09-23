@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import API from '../api/client';
 
 const TODAY_DATE = new Date().toISOString().slice(0, 10);
@@ -14,6 +14,12 @@ export default function Dashboard({ onLogout }) {
   const [reportDate, setReportDate] = useState(TODAY_DATE);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [bookingNotification, setBookingNotification] = useState(null);
+  const [notificationPermission, setNotificationPermission] = useState(
+    typeof Notification === 'undefined' ? 'unsupported' : Notification.permission
+  );
+  const knownBookingIds = useRef(null);
+  const notificationTimer = useRef(null);
 
   const [doctorsList, setDoctorsList] = useState([]);
   const [showDoctorModal, setShowDoctorModal] = useState(false);
@@ -42,6 +48,29 @@ export default function Dashboard({ onLogout }) {
           return numB - numA;
         });
         setBookings(sorted);
+
+        const currentIds = new Set(sorted.map((booking) => String(booking.raw_id || booking.id)));
+        if (knownBookingIds.current) {
+          const newBooking = sorted.find((booking) => !knownBookingIds.current.has(String(booking.raw_id || booking.id)));
+          if (newBooking) {
+            const notification = {
+              title: 'New patient booking',
+              message: `${newBooking.customer_name || 'A patient'} booked ${newBooking.item || 'a service'}.`,
+              bookingId: newBooking.id
+            };
+            setBookingNotification(notification);
+            window.clearTimeout(notificationTimer.current);
+            notificationTimer.current = window.setTimeout(() => setBookingNotification(null), 10000);
+
+            if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+              new Notification(notification.title, {
+                body: notification.message,
+                tag: `booking-${newBooking.raw_id || newBooking.id}`
+              });
+            }
+          }
+        }
+        knownBookingIds.current = currentIds;
       }
       setLastUpdated(new Date());
     } catch (err) {
@@ -49,6 +78,16 @@ export default function Dashboard({ onLogout }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const enableNotifications = async () => {
+    if (typeof Notification === 'undefined') {
+      setNotificationPermission('unsupported');
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
   };
 
   const refreshWorkspace = async () => {
@@ -74,7 +113,10 @@ export default function Dashboard({ onLogout }) {
       fetchBookings();
       fetchDoctors();
     }, 2000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.clearTimeout(notificationTimer.current);
+    };
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
@@ -229,6 +271,14 @@ export default function Dashboard({ onLogout }) {
                     {refreshing ? '⟳ Updating…' : '🔄 Refresh'}
                   </button>
                   {lastUpdated && <span style={{ alignSelf: 'center', color: '#64748b', fontSize: '11px' }}>Live · {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>}
+          {notificationPermission !== 'granted' && notificationPermission !== 'unsupported' && (
+            <button
+              onClick={enableNotifications}
+              style={{ background: '#e0f2fe', border: '1px solid #bae6fd', color: '#0369a1', padding: '8px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+            >
+              🔔 Enable alerts
+            </button>
+          )}
           <button onClick={onLogout} style={{ background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecaca', padding: '8px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}>Sign Out</button>
         </div>
       </header>
@@ -243,6 +293,16 @@ export default function Dashboard({ onLogout }) {
           ☰ <span>Menu</span>
         </button>
         {mobileMenuOpen && <button className="admin-menu-backdrop" aria-label="Close admin menu" onClick={() => setMobileMenuOpen(false)} />}
+        {bookingNotification && (
+          <div
+            role="status"
+            style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 20, width: 'min(360px, calc(100vw - 40px))', background: '#ffffff', border: '1px solid #bae6fd', borderLeft: '5px solid #0284c7', borderRadius: '10px', boxShadow: '0 12px 30px rgba(15,23,42,0.18)', padding: '14px 16px' }}
+          >
+            <div style={{ color: '#0369a1', fontSize: '12px', fontWeight: 900 }}>🔔 {bookingNotification.title}</div>
+            <div style={{ color: '#334155', fontSize: '13px', fontWeight: 700, marginTop: '4px' }}>{bookingNotification.message}</div>
+            <div style={{ color: '#64748b', fontSize: '11px', marginTop: '5px' }}>Order {bookingNotification.bookingId} is ready for review.</div>
+          </div>
+        )}
         
         {activeTab === 'orders' && (
           <div>
