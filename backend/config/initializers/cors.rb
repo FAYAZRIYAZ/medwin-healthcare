@@ -1,4 +1,5 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
+  # Keep local development and deployed web clients usable during API rollouts.
   allow do
     configured_origins = ENV.fetch("FRONTEND_ORIGINS", "").split(",")
     default_origins = %w[
