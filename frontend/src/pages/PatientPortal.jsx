@@ -115,6 +115,19 @@ export default function PatientPortal({ onLogout }) {
   }, []);
   /* eslint-enable react-hooks/exhaustive-deps, react-hooks/set-state-in-effect */
 
+  useEffect(() => {
+    const handleBackToDashboard = () => setSelectedMenu('home');
+    window.addEventListener('popstate', handleBackToDashboard);
+    return () => window.removeEventListener('popstate', handleBackToDashboard);
+  }, []);
+
+  const openFeature = (featureId) => {
+    window.history.pushState({ patientFeature: featureId }, '', window.location.href);
+    setSelectedMenu(featureId);
+    if (featureId === 'my_orders') fetchMyOrders();
+    if (featureId === 'doctors') syncDoctors();
+  };
+
   const handleDoctorSubmit = async (e) => {
     e.preventDefault();
     if (!selectedDoctor) return alert('Please select an active doctor.');
@@ -321,11 +334,7 @@ export default function PatientPortal({ onLogout }) {
                   key={feature.id}
                   type="button"
                   className={`patient-feature-card patient-feature-${feature.tone}`}
-                  onClick={() => {
-                    setSelectedMenu(feature.id);
-                    if (feature.id === 'my_orders') fetchMyOrders();
-                    if (feature.id === 'doctors') syncDoctors();
-                  }}
+                  onClick={() => openFeature(feature.id)}
                 >
                   <span className="patient-feature-icon" aria-hidden="true">{feature.icon}</span>
                   <span className="patient-feature-title">{feature.title}</span>

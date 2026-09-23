@@ -1,5 +1,6 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { App as CapacitorApp } from '@capacitor/app';
 
 const Login = lazy(() => import('./pages/Login'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -20,6 +21,26 @@ export default function App() {
     localStorage.removeItem('token');
     setCurrentUser(null);
   };
+
+  useEffect(() => {
+    let backButtonListener;
+
+    CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack || window.history.length > 1) {
+        window.history.back();
+      } else if (window.location.hash !== '#/portal' && window.location.hash !== '#/dashboard') {
+        window.location.hash = currentUser?.role === 'admin' ? '#/dashboard' : '#/portal';
+      } else {
+        CapacitorApp.exitApp();
+      }
+    }).then((listener) => {
+      backButtonListener = listener;
+    });
+
+    return () => {
+      backButtonListener?.remove();
+    };
+  }, [currentUser]);
 
   return (
     <Router>
