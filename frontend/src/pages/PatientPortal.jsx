@@ -29,8 +29,7 @@ const HOME_CARE_SERVICES = [
 export default function PatientPortal({ onLogout }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const [selectedMenu, setSelectedMenu] = useState('doctors');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState('home');
 
   const [myOrders, setMyOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(false);
@@ -268,80 +267,75 @@ export default function PatientPortal({ onLogout }) {
   };
 
   return (
-    <div className="patient-shell" style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      
-      {/* Sidebar */}
-      <aside className={`patient-sidebar${mobileMenuOpen ? ' mobile-menu-open' : ''}`} style={{ width: '270px', background: '#0f172a', color: '#fff', padding: '24px 18px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '22px' }}>
-            <div style={{ width: '40px', height: '40px', background: '#0284c7', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '18px' }}>M+</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 800, fontSize: '16px' }}>MEDWIN HEALTH</div>
-              <div style={{ fontSize: '11px', color: '#7dd3fc' }}>Hyderabad Home Care</div>
-            </div>
-          </div>
-
-          <div style={{ background: '#1e293b', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>
-            <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 800 }}>LOGGED IN PATIENT</span>
-            <div style={{ fontWeight: 700, fontSize: '14px', marginTop: '2px' }}>{patientName}</div>
-            <div style={{ fontSize: '12px', color: '#38bdf8' }}>+91 {phone}</div>
-          </div>
-
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {[
-              { id: 'home', icon: '⌂', label: 'Home' },
-              { id: 'doctors', icon: '👨‍⚕️', label: 'Consult Available Doctors' },
-              { id: 'oxygen', icon: '🫁', label: 'Oxygen Cylinder Rentals' },
-              { id: 'homecare', icon: '🏠', label: 'Home Nursing Care' },
-              { id: 'diagnostics', icon: '🔬', label: 'Rapid Lab Diagnostics' },
-              { id: 'my_orders', icon: '📦', label: `Track Bookings (${myOrders.length})` }
-            ].map((t) => (
-              <button
-                key={t.id}
-                onClick={() => {
-                  setSelectedMenu(t.id === 'home' ? 'doctors' : t.id);
-                  setMobileMenuOpen(false);
-                  if (t.id === 'my_orders') fetchMyOrders();
-                  if (t.id === 'doctors') syncDoctors();
-                }}
-                style={{
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  background: selectedMenu === t.id ? '#0284c7' : 'transparent',
-                  color: selectedMenu === t.id ? '#ffffff' : '#94a3b8',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  fontWeight: 700,
-                  fontSize: '13px'
-                }}
-              >
-                {t.icon} {t.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        <button
-          onClick={onLogout}
-          aria-label="Sign out"
-          style={{ width: '100%', background: 'rgba(248, 113, 113, 0.12)', color: '#fecaca', border: '1px solid rgba(248, 113, 113, 0.24)', padding: '11px 12px', borderRadius: '9px', fontWeight: 800, cursor: 'pointer', textAlign: 'left' }}
-        >
-          ↪&nbsp; Sign Out
+    <div className="patient-shell patient-shell-simple" style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+      <header className="patient-topbar">
+        <button type="button" className="patient-brand" onClick={() => setSelectedMenu('home')} aria-label="Open patient services">
+          <span className="patient-brand-mark">M+</span>
+          <span>
+            <strong>MEDWIN HEALTH</strong>
+            <small>Hyderabad Home Care</small>
+          </span>
         </button>
-      </aside>
-      {mobileMenuOpen && <button className="mobile-menu-backdrop" aria-label="Close menu" onClick={() => setMobileMenuOpen(false)} />}
+        <div className="patient-topbar-actions">
+          <div className="patient-user-summary">
+            <span>LOGGED IN PATIENT</span>
+            <strong>{patientName}</strong>
+            <small>+91 {phone}</small>
+          </div>
+          <button onClick={onLogout} className="patient-signout" aria-label="Sign out">
+            ↪ Sign Out
+          </button>
+        </div>
+      </header>
 
       {/* Main Content */}
-      <main className="patient-content" style={{ flex: 1, padding: '28px', maxWidth: '1050px', margin: '0 auto', width: '100%' }}>
-        <button
-          type="button"
-          className="mobile-home-button"
-          onClick={() => setMobileMenuOpen(true)}
-          aria-label="Open home menu"
-        >
-          ☰ <span>Home</span>
-        </button>
+      <main className="patient-content patient-content-simple" style={{ padding: '28px', maxWidth: '1180px', margin: '0 auto', width: '100%' }}>
+        {selectedMenu === 'home' && (
+          <div className="patient-dashboard">
+            <div className="patient-dashboard-hero">
+              <div>
+                <span className="patient-dashboard-eyebrow">MEDWIN HEALTHCARE</span>
+                <h1>How can we help you today?</h1>
+                <p>Book trusted healthcare services from one simple dashboard.</p>
+              </div>
+              <div className="patient-dashboard-hero-icon" aria-hidden="true">✚</div>
+            </div>
+
+            <div className="patient-dashboard-heading">
+              <div>
+                <span className="patient-dashboard-eyebrow">PATIENT SERVICES</span>
+                <h2>Choose a service</h2>
+              </div>
+              <span className="patient-dashboard-status">● Services available</span>
+            </div>
+
+            <div className="patient-feature-grid">
+              {[
+                { id: 'doctors', icon: '👨‍⚕️', title: 'Consult a Doctor', text: 'Find doctors and book a home visit.', tone: 'blue' },
+                { id: 'oxygen', icon: '🫁', title: 'Oxygen Support', text: 'Rent cylinders or request a refill.', tone: 'mint' },
+                { id: 'homecare', icon: '🏠', title: 'Home Nursing Care', text: 'Get trained care at your doorstep.', tone: 'peach' },
+                { id: 'diagnostics', icon: '🔬', title: 'Lab Diagnostics', text: 'Book fast and reliable home tests.', tone: 'violet' },
+                { id: 'my_orders', icon: '📦', title: 'Track Bookings', text: `${myOrders.length} booking${myOrders.length === 1 ? '' : 's'} in your account.`, tone: 'slate' }
+              ].map((feature) => (
+                <button
+                  key={feature.id}
+                  type="button"
+                  className={`patient-feature-card patient-feature-${feature.tone}`}
+                  onClick={() => {
+                    setSelectedMenu(feature.id);
+                    if (feature.id === 'my_orders') fetchMyOrders();
+                    if (feature.id === 'doctors') syncDoctors();
+                  }}
+                >
+                  <span className="patient-feature-icon" aria-hidden="true">{feature.icon}</span>
+                  <span className="patient-feature-title">{feature.title}</span>
+                  <span className="patient-feature-text">{feature.text}</span>
+                  <span className="patient-feature-link">Open service <span aria-hidden="true">→</span></span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* DOCTORS SELECTION */}
         {selectedMenu === 'doctors' && (

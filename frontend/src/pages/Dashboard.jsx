@@ -240,7 +240,7 @@ export default function Dashboard({ onLogout }) {
           onClick={() => setMobileMenuOpen(true)}
           aria-label="Open admin menu"
         >
-          ☰ <span>Home</span>
+          ☰ <span>Menu</span>
         </button>
         {mobileMenuOpen && <button className="admin-menu-backdrop" aria-label="Close admin menu" onClick={() => setMobileMenuOpen(false)} />}
         
