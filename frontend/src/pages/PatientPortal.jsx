@@ -26,6 +26,16 @@ const HOME_CARE_SERVICES = [
   { id: 'hc-2', title: '24-Hour Residential Patient Attendant', ratePerDay: 1800, desc: 'Bed-bath, feeding, turning, pulse oximetry & mobility assistance.' }
 ];
 
+const submitBooking = (payload) => API.post('/bookings', new URLSearchParams(payload), {
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+});
+
+const getBookingError = (err) => {
+  const serverError = err.response?.data?.error;
+  const message = Array.isArray(serverError) ? serverError.join(', ') : serverError;
+  return message || `Request failed (${err.response?.status || 'network error'}). Please try again.`;
+};
+
 export default function PatientPortal({ onLogout }) {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -154,19 +164,16 @@ export default function PatientPortal({ onLogout }) {
 
     setLoading(true);
     try {
-      const bookingForm = new URLSearchParams({
+      await submitBooking({
         ...payload,
         payment_mode: 'Cash to Doctor on Visit',
         status: 'Pending'
-      });
-      await API.post('/bookings', bookingForm, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       alert(`Appointment confirmed with ${selectedDoctor.name}!`);
       fetchMyOrders();
       setSelectedMenu('my_orders');
     } catch (err) {
-      alert('Failed: ' + err.message);
+      alert('Failed: ' + getBookingError(err));
     } finally {
       setLoading(false);
     }
@@ -199,12 +206,12 @@ export default function PatientPortal({ onLogout }) {
 
     setLoading(true);
     try {
-      await API.post('/bookings', { ...payload, payment_mode: 'Cash on Delivery (COD)', status: 'Pending' });
+      await submitBooking({ ...payload, payment_mode: 'Cash on Delivery (COD)', status: 'Pending' });
       alert('Oxygen booking confirmed!');
       fetchMyOrders();
       setSelectedMenu('my_orders');
     } catch (err) {
-      alert('Failed: ' + err.message);
+      alert('Failed: ' + getBookingError(err));
     } finally {
       setLoading(false);
     }
@@ -235,12 +242,12 @@ export default function PatientPortal({ onLogout }) {
 
     setLoading(true);
     try {
-      await API.post('/bookings', { ...payload, payment_mode: 'Cash on Duty', status: 'Pending' });
+      await submitBooking({ ...payload, payment_mode: 'Cash on Duty', status: 'Pending' });
       alert('Home care requested!');
       fetchMyOrders();
       setSelectedMenu('my_orders');
     } catch (err) {
-      alert('Failed: ' + err.message);
+      alert('Failed: ' + getBookingError(err));
     } finally {
       setLoading(false);
     }
@@ -268,12 +275,12 @@ export default function PatientPortal({ onLogout }) {
 
     setLoading(true);
     try {
-      await API.post('/bookings', { ...payload, payment_mode: 'Cash on Collection', status: 'Pending' });
+      await submitBooking({ ...payload, payment_mode: 'Cash on Collection', status: 'Pending' });
       alert('Lab collection confirmed!');
       fetchMyOrders();
       setSelectedMenu('my_orders');
     } catch (err) {
-      alert('Failed: ' + err.message);
+      alert('Failed: ' + getBookingError(err));
     } finally {
       setLoading(false);
     }

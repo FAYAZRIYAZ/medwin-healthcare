@@ -50,7 +50,9 @@ export default function PaymentPage() {
       });
       navigate('/portal'); // Return patients to their orders after payment confirmation
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to submit payment. Please verify your connection.');
+      const serverError = err.response?.data?.error;
+      const message = Array.isArray(serverError) ? serverError.join(', ') : serverError;
+      setError(message || `Request failed (${err.response?.status || 'network error'}). Please verify your connection.`);
       setSubmitting(false);
     }
   };
