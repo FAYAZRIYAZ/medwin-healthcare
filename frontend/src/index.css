@@ -17,11 +17,33 @@
   --shadow-md: 0 12px 32px rgba(16, 37, 63, 0.1);
 }
 
+.patient-sidebar nav {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+}
+
+.patient-sidebar nav button {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 44px;
+  align-items: center;
+}
+
 .patient-sidebar nav button {
   color: #183b4a !important;
   border-left: 0 !important;
   border-radius: 10px !important;
   padding: 12px 14px !important;
+}
+
+.admin-shell > header.admin-header .admin-tabs button {
+  display: flex !important;
+  width: 100% !important;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .patient-sidebar nav button:hover,
@@ -337,7 +359,7 @@ textarea:focus {
   }
 
   .admin-shell > header.admin-header.mobile-menu-open .admin-tabs {
-    transform: translateX(0);
+    transform: translateX(0) !important;
   }
 
   .admin-shell > header.admin-header .admin-tabs button {
@@ -399,7 +421,8 @@ textarea:focus {
   }
 
   .patient-shell {
-    display: flex !important;
+    display: block !important;
+    position: relative;
   }
 
   .patient-sidebar {
@@ -408,13 +431,65 @@ textarea:focus {
     z-index: 30;
     width: min(78vw, 320px) !important;
     padding: 18px 14px !important;
+    background: #ffffff !important;
+    color: #183b4a !important;
     transform: translateX(-105%);
     transition: transform 180ms ease;
-    box-shadow: 14px 0 32px rgba(10, 45, 58, 0.24);
+    box-shadow: 14px 0 32px rgba(10, 45, 58, 0.18);
   }
 
   .patient-sidebar.mobile-menu-open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
+  }
+
+  .patient-sidebar nav {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+    gap: 8px !important;
+  }
+
+  .patient-sidebar nav button {
+    display: flex !important;
+    width: 100% !important;
+    min-height: 44px;
+    align-items: center;
+    padding: 12px 14px !important;
+    border: 0 !important;
+    border-radius: 10px !important;
+    color: #183b4a !important;
+  }
+
+  .patient-sidebar nav button:hover,
+  .patient-sidebar nav button[style*="#0284c7"] {
+    background: #e7f6f3 !important;
+    color: #0f625f !important;
+    box-shadow: none !important;
+  }
+
+  .patient-sidebar > div:first-child > div:first-child {
+    color: #183b4a !important;
+  }
+
+  .patient-sidebar > div:first-child > div:nth-child(2) {
+    background: #f1f8f7 !important;
+    border: 1px solid #d9e8e6 !important;
+    color: #183b4a !important;
+  }
+
+  .patient-sidebar > div:first-child > div:nth-child(2) span {
+    color: #61718a !important;
+  }
+
+  .patient-sidebar > div:first-child > div:nth-child(2) div:last-child {
+    color: #168c86 !important;
+  }
+
+  .patient-sidebar > button {
+    background: #fff1f1 !important;
+    border-color: #ffd4d4 !important;
+    color: #b42318 !important;
   }
 
   .mobile-menu-backdrop {
