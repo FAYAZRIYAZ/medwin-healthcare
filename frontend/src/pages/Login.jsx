@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/client';
 
+const FREE_SAMPLE_OTP = '123456';
+
 export default function Login({ setAuth }) {
   const [mode, setMode] = useState('patient');
   const [step, setStep] = useState('details');
@@ -34,6 +36,8 @@ export default function Login({ setAuth }) {
     }
 
     setLoading(true);
+    setTestOtp(FREE_SAMPLE_OTP);
+    setDemoOtp(true);
     try {
       const response = await API.post('/send_signup_otp', {
         name: name.trim(),
@@ -50,9 +54,8 @@ export default function Login({ setAuth }) {
       setStep('otp');
     } catch (err) {
       if (err.response?.status === 409) {
-        const temporaryOtp = String(Math.floor(100000 + Math.random() * 900000));
-        setTestOtp(temporaryOtp);
-        setOtp(temporaryOtp);
+        setTestOtp(FREE_SAMPLE_OTP);
+        setOtp(FREE_SAMPLE_OTP);
         setDemoOtp(true);
         setStatusMessage('Temporary demo OTP generated because SMS is not connected yet.');
         setStep('otp');
@@ -143,9 +146,9 @@ export default function Login({ setAuth }) {
         {statusMessage && <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', padding: '11px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, marginBottom: '14px' }}>{statusMessage}</div>}
         {mode === 'patient' && step === 'otp' && testOtp && (
           <div style={{ background: '#fff7ed', border: '2px solid #fb923c', color: '#9a3412', padding: '14px', borderRadius: '10px', textAlign: 'center', marginBottom: '14px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '0.5px' }}>TEMPORARY TEST OTP</div>
+            <div style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '0.5px' }}>FREE SAMPLE OTP</div>
             <div style={{ fontSize: '30px', fontWeight: 900, letterSpacing: '8px', marginTop: '4px' }}>{testOtp}</div>
-            <div style={{ fontSize: '11px', marginTop: '4px' }}>This is shown temporarily until MSG91 is connected.</div>
+            <div style={{ fontSize: '11px', marginTop: '4px' }}>Enter this code to continue. SMS will be connected later.</div>
           </div>
         )}
 
