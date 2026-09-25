@@ -802,6 +802,77 @@ textarea:focus {
   }
 }
 
+/* Keep the admin workspace visually aligned with the patient portal. */
+.admin-shell {
+  color: #1e3a5f !important;
+  background: #f8fafc !important;
+}
+
+.admin-shell > header.admin-header {
+  max-width: 1240px;
+  margin: 0 auto;
+  border-bottom: 1px solid #e5e7eb !important;
+  box-shadow: 0 3px 14px rgba(15, 23, 42, 0.05) !important;
+}
+
+.admin-shell > header.admin-header > div:first-child > div:first-child {
+  background: #e0f2fe !important;
+  color: #0284c7 !important;
+}
+
+.admin-shell > header.admin-header > div:first-child > div:last-child > div:first-child {
+  color: #0369a1 !important;
+}
+
+.admin-shell > header.admin-header .admin-tabs {
+  background: #f0f9ff !important;
+  border-color: #bae6fd !important;
+}
+
+.admin-shell > header.admin-header .admin-tabs button {
+  color: #334155 !important;
+  border-radius: 9px !important;
+}
+
+.admin-shell > header.admin-header .admin-tabs button:hover,
+.admin-shell > header.admin-header .admin-tabs button[style*="#0284c7"] {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #bae6fd !important;
+  box-shadow: none !important;
+}
+
+.admin-content {
+  max-width: 1180px !important;
+  padding-top: 34px !important;
+}
+
+.admin-content > div > div[style*="background: '#ffffff'"],
+.admin-content > div > div[style*="background: '#ffffff'"] > table {
+  border-color: #e5e7eb !important;
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.06) !important;
+}
+
+.admin-content h2,
+.admin-content h3 {
+  color: #1e3a5f !important;
+}
+
+@media (max-width: 640px) {
+  .admin-shell > header.admin-header {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .admin-content {
+    padding: 22px 16px 80px !important;
+  }
+
+  .admin-content h2 {
+    font-size: 20px !important;
+  }
+}
+
 /* Patient workspace refresh: light, calm surfaces with a single healthcare accent. */
 .patient-shell {
   background: #f8fafc !important;
