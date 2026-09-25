@@ -53,11 +53,11 @@ export default function Login({ setAuth }) {
       setStatusMessage(message);
       setStep('otp');
     } catch (err) {
-      if (err.response?.status === 409) {
+      if ([409, 422].includes(err.response?.status)) {
         setTestOtp(FREE_SAMPLE_OTP);
         setOtp(FREE_SAMPLE_OTP);
         setDemoOtp(true);
-        setStatusMessage('Temporary demo OTP generated because SMS is not connected yet.');
+        setStatusMessage('Free sample OTP is shown below because SMS is not connected yet.');
         setStep('otp');
       } else {
         setError(err.response?.data?.error || 'Could not send OTP. Please try again.');
