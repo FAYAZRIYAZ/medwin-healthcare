@@ -209,6 +209,8 @@ export default function Dashboard({ onLogout }) {
     }
     return acc;
   }, 0);
+  const pendingBookings = bookings.filter((booking) => booking.status === 'Pending').length;
+  const approvedBookings = bookings.filter((booking) => ['Approved', 'Delivered', 'Completed'].includes(booking.status)).length;
 
   const cylinderRentalsCount = bookings.filter(b => (b.booking_type || '').includes('cylinder') && (b.status !== 'Cancelled')).length;
   const doctorVisitsCount = bookings.filter(b => (b.booking_type || '').includes('doctor') && (b.status !== 'Cancelled')).length;
@@ -330,8 +332,24 @@ export default function Dashboard({ onLogout }) {
         )}
         
         {activeTab === 'orders' && (
-          <div>
+          <div className="admin-orders">
             {actionError && <div style={{ background: '#fee2e2', border: '1px solid #fecaca', color: '#b91c1c', padding: '12px 16px', borderRadius: '8px', marginBottom: '16px', fontWeight: 700 }}>{actionError}</div>}
+
+            <div className="admin-page-heading">
+              <div>
+                <span className="admin-eyebrow">OPERATIONS OVERVIEW</span>
+                <h1>Dispatch workspace</h1>
+                <p>Review incoming bookings and keep every service moving.</p>
+              </div>
+              <span className="admin-live-status">{lastUpdated ? `Updated ${lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Syncing live'}</span>
+            </div>
+
+            <div className="admin-summary-grid" aria-label="Operations summary">
+              <div className="admin-summary-card"><span>Total bookings</span><strong>{bookings.length}</strong><small>All incoming requests</small></div>
+              <div className="admin-summary-card admin-summary-warning"><span>Pending review</span><strong>{pendingBookings}</strong><small>Needs an approval decision</small></div>
+              <div className="admin-summary-card admin-summary-success"><span>In progress</span><strong>{approvedBookings}</strong><small>Approved or fulfilled</small></div>
+              <div className="admin-summary-card admin-summary-accent"><span>Approved revenue</span><strong>₹{totalRevenue}</strong><small>Collected or committed</small></div>
+            </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -370,7 +388,7 @@ export default function Dashboard({ onLogout }) {
               />
             </div>
 
-            <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflowX: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div className="admin-table-card" style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflowX: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -435,7 +453,7 @@ export default function Dashboard({ onLogout }) {
         )}
 
         {activeTab === 'doctors' && (
-          <div>
+          <div className="admin-doctors">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
                 <span style={{ fontSize: '11px', background: '#dcfce7', color: '#15803d', padding: '3px 8px', borderRadius: '4px', fontWeight: 800 }}>SYNCED WITH PATIENT PORTAL</span>
@@ -478,13 +496,13 @@ export default function Dashboard({ onLogout }) {
         )}
 
         {activeTab === 'crm' && (
-          <div>
+          <div className="admin-crm">
             <div style={{ marginBottom: '20px' }}>
               <span style={{ fontSize: '11px', background: '#f5f3ff', color: '#7c3aed', padding: '3px 8px', borderRadius: '4px', fontWeight: 800 }}>CRM PATIENT DIRECTORY</span>
               <h2 style={{ margin: '4px 0 0 0', fontSize: '20px', fontWeight: 900, color: '#0f172a' }}>Lead Tracking & History</h2>
             </div>
 
-            <div style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflowX: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <div className="admin-table-card" style={{ background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', overflowX: 'auto', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#64748b', fontSize: '11px', textTransform: 'uppercase' }}>
@@ -520,7 +538,7 @@ export default function Dashboard({ onLogout }) {
         )}
 
         {activeTab === 'reports' && (
-          <div>
+          <div className="admin-reports">
             <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '16px', flexWrap: 'wrap' }}>
               <div>
               <span style={{ fontSize: '11px', background: '#e0f2fe', color: '#0369a1', padding: '3px 8px', borderRadius: '4px', fontWeight: 800 }}>ANALYTICS & LEDGERS</span>
