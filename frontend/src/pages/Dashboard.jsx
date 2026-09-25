@@ -10,6 +10,7 @@ export default function Dashboard({ onLogout }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [metricFilter, setMetricFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [reportDate, setReportDate] = useState(TODAY_DATE);
   const [refreshing, setRefreshing] = useState(false);
@@ -211,6 +212,7 @@ export default function Dashboard({ onLogout }) {
   }, 0);
   const pendingBookings = bookings.filter((booking) => booking.status === 'Pending').length;
   const approvedBookings = bookings.filter((booking) => ['Approved', 'Delivered', 'Completed'].includes(booking.status)).length;
+  const progressStatuses = ['Approved', 'Delivered', 'Completed'];
 
   const cylinderRentalsCount = bookings.filter(b => (b.booking_type || '').includes('cylinder') && (b.status !== 'Cancelled')).length;
   const doctorVisitsCount = bookings.filter(b => (b.booking_type || '').includes('doctor') && (b.status !== 'Cancelled')).length;
@@ -219,8 +221,12 @@ export default function Dashboard({ onLogout }) {
 
   const filteredBookings = bookings.filter((b) => {
     const matchesFilter = filter === 'all' || (b.booking_type || b.type) === filter;
+    const matchesMetric = metricFilter === 'all'
+      || (metricFilter === 'pending' && b.status === 'Pending')
+      || (metricFilter === 'progress' && progressStatuses.includes(b.status))
+      || (metricFilter === 'revenue' && progressStatuses.includes(b.status));
     const matchesSearch = (b.customer_name || '').toLowerCase().includes(search.toLowerCase()) || (b.phone || '').includes(search) || (b.item || '').toLowerCase().includes(search.toLowerCase());
-    return matchesFilter && matchesSearch;
+    return matchesFilter && matchesMetric && matchesSearch;
   });
 
   const reportBookings = bookings.filter((booking) => {
@@ -345,11 +351,35 @@ export default function Dashboard({ onLogout }) {
             </div>
 
             <div className="admin-summary-grid" aria-label="Operations summary">
-              <div className="admin-summary-card"><span>Total bookings</span><strong>{bookings.length}</strong><small>All incoming requests</small></div>
-              <div className="admin-summary-card admin-summary-warning"><span>Pending review</span><strong>{pendingBookings}</strong><small>Needs an approval decision</small></div>
-              <div className="admin-summary-card admin-summary-success"><span>In progress</span><strong>{approvedBookings}</strong><small>Approved or fulfilled</small></div>
-              <div className="admin-summary-card admin-summary-accent"><span>Approved revenue</span><strong>₹{totalRevenue}</strong><small>Collected or committed</small></div>
+              {[
+                { id: 'all', label: 'Total bookings', value: bookings.length, hint: 'Show all incoming requests', className: '' },
+                { id: 'pending', label: 'Pending review', value: pendingBookings, hint: 'Show all pending bookings', className: 'admin-summary-warning' },
+                { id: 'progress', label: 'In progress', value: approvedBookings, hint: 'Show approved and fulfilled', className: 'admin-summary-success' },
+                { id: 'revenue', label: 'Approved revenue', value: `₹${totalRevenue}`, hint: 'Show revenue bookings', className: 'admin-summary-accent' }
+              ].map((card) => (
+                <button
+                  type="button"
+                  key={card.id}
+                  className={`admin-summary-card ${card.className} ${metricFilter === card.id ? 'is-selected' : ''}`}
+                  onClick={() => {
+                    setMetricFilter(card.id);
+                    setFilter('all');
+                  }}
+                  aria-pressed={metricFilter === card.id}
+                >
+                  <span>{card.label}</span>
+                  <strong>{card.value}</strong>
+                  <small>{metricFilter === card.id ? 'Showing this list below' : card.hint}</small>
+                </button>
+              ))}
             </div>
+
+            {metricFilter !== 'all' && (
+              <div className="admin-active-filter">
+                Showing {metricFilter === 'pending' ? 'all pending bookings' : metricFilter === 'progress' ? 'all in-progress bookings' : 'all approved-revenue bookings'}
+                <button type="button" onClick={() => setMetricFilter('all')}>Clear filter</button>
+              </div>
+            )}
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
