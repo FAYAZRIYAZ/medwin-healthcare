@@ -12,6 +12,7 @@ export default function Login({ setAuth }) {
   const [adminPassword, setAdminPassword] = useState('');
   const [error, setError] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
+  const [testOtp, setTestOtp] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -40,7 +41,8 @@ export default function Login({ setAuth }) {
       let message = response.data.message || 'OTP sent to your mobile number.';
       if (response.data.debug_otp) {
         setOtp(response.data.debug_otp);
-        message += ` Test OTP: ${response.data.debug_otp}`;
+        setTestOtp(response.data.debug_otp);
+        message += ' Use the temporary OTP shown below.';
       }
       setStatusMessage(message);
       setStep('otp');
@@ -61,9 +63,11 @@ export default function Login({ setAuth }) {
 
     setLoading(true);
     try {
-      const response = await API.post('/login_with_otp', {
+      const response = await API.post('/complete_signup', {
         identifier: phone.trim(),
-        otp: otp.trim()
+        otp: otp.trim(),
+        password: 'TempPass123!',
+        password_confirmation: 'TempPass123!'
       });
       saveSession(response, '/portal');
     } catch (err) {
@@ -97,6 +101,7 @@ export default function Login({ setAuth }) {
     setError('');
     setStatusMessage('');
     setOtp('');
+    setTestOtp('');
   };
 
   return (
@@ -115,6 +120,13 @@ export default function Login({ setAuth }) {
 
         {error && <div style={{ background: '#fee2e2', border: '1px solid #fecaca', color: '#b91c1c', padding: '11px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, marginBottom: '14px' }}>{error}</div>}
         {statusMessage && <div style={{ background: '#ecfdf5', border: '1px solid #a7f3d0', color: '#047857', padding: '11px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, marginBottom: '14px' }}>{statusMessage}</div>}
+        {mode === 'patient' && step === 'otp' && testOtp && (
+          <div style={{ background: '#fff7ed', border: '2px solid #fb923c', color: '#9a3412', padding: '14px', borderRadius: '10px', textAlign: 'center', marginBottom: '14px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '0.5px' }}>TEMPORARY TEST OTP</div>
+            <div style={{ fontSize: '30px', fontWeight: 900, letterSpacing: '8px', marginTop: '4px' }}>{testOtp}</div>
+            <div style={{ fontSize: '11px', marginTop: '4px' }}>This is shown temporarily until MSG91 is connected.</div>
+          </div>
+        )}
 
         {mode === 'patient' ? (
           step === 'details' ? (
@@ -132,7 +144,7 @@ export default function Login({ setAuth }) {
               <label style={{ display: 'block', color: '#334155', fontSize: '11px', fontWeight: 800, marginBottom: '5px' }}>ONE-TIME PASSWORD</label>
               <input required autoFocus inputMode="numeric" value={otp} onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 8))} placeholder="Enter OTP" style={{ width: '100%', boxSizing: 'border-box', padding: '12px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '18px', fontSize: '20px', letterSpacing: '5px', textAlign: 'center' }} />
               <button disabled={loading} type="submit" style={{ width: '100%', padding: '12px', border: 0, borderRadius: '8px', background: '#0284c7', color: '#fff', fontWeight: 800, cursor: loading ? 'wait' : 'pointer' }}>{loading ? 'Verifying…' : 'Verify & Enter Patient Portal'}</button>
-              <button type="button" onClick={() => { setStep('details'); setError(''); setStatusMessage(''); }} style={{ width: '100%', marginTop: '10px', padding: '9px', border: 0, background: 'transparent', color: '#0284c7', fontWeight: 700, cursor: 'pointer' }}>Use a different number</button>
+              <button type="button" onClick={() => { setStep('details'); setError(''); setStatusMessage(''); setTestOtp(''); setOtp(''); }} style={{ width: '100%', marginTop: '10px', padding: '9px', border: 0, background: 'transparent', color: '#0284c7', fontWeight: 700, cursor: 'pointer' }}>Use a different number</button>
             </form>
           )
         ) : (
