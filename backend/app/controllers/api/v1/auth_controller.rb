@@ -19,10 +19,6 @@ class Api::V1::AuthController < ApplicationController
 
     existing_user = email ? User.find_by("LOWER(email) = ?", email) : User.find_by(phone: phone)
 
-    if existing_user && existing_user.password_digest.present? && existing_user.otp_code.nil?
-      return render json: { error: "An account with this phone number already exists. Please sign in." }, status: :conflict
-    end
-
     user = existing_user || User.new(email: email, phone: phone, role: "patient")
     user.name = name
     user.email = email if email.present?
@@ -38,6 +34,29 @@ class Api::V1::AuthController < ApplicationController
       Msg91OtpSender.deliver!(phone: phone, otp: otp)
     elsif !ActiveModel::Type::Boolean.new.cast(ENV["OTP_DEBUG"])
       return render json: { error: "Email OTP delivery is not configured. Use a phone number for signup." }, status: :unprocessable_entity
+    end
+
+    # POST /login_with_otp
+    def login_with_otp
+      data = parsed_body
+      identifier = (data[:identifier] || params[:identifier]).to_s.strip
+      otp = (data[:otp] || params[:otp]).to_s.strip
+      clean_phone = identifier.gsub(/\s+/, "")
+      user = User.find_by("LOWER(email) = ? OR phone = ?", identifier.downcase, clean_phone)
+
+      return render json: { error: "Patient account not found. Request a new OTP to continue." }, status: :not_found unless user
+      return render json: { error: "Invalid or expired OTP code." }, status: :unauthorized unless user.valid_otp?(otp)
+
+      user.clear_otp!
+      user.save!(validate: false)
+      token = JWT.encode({ user_id: user.id, exp: 7.days.from_now.to_i }, SECRET_KEY)
+
+      render json: {
+        token: token,
+        user: { id: user.id, name: user.name, email: user.email, phone: user.phone, role: user.role }
+      }, status: :ok
+    rescue StandardError => e
+      render json: { error: e.message }, status: :unprocessable_entity
     end
 
     render json: {

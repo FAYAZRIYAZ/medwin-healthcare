@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   post '/login', to: 'api/v1/auth#login'
+  post '/login_with_otp', to: 'api/v1/auth#login_with_otp'
   post '/send_signup_otp', to: 'api/v1/auth#send_signup_otp'
   post '/complete_signup', to: 'api/v1/auth#complete_signup'
   post '/send_password_reset_otp', to: 'api/v1/auth#send_password_reset_otp'
