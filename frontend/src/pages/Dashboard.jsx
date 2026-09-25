@@ -37,6 +37,7 @@ export default function Dashboard({ onLogout }) {
   });
 
   const [actionError, setActionError] = useState('');
+  const [resettingPatientData, setResettingPatientData] = useState(false);
 
   const fetchBookings = async () => {
     try {
@@ -138,6 +139,27 @@ export default function Dashboard({ onLogout }) {
 
   const handleSelectChange = (order, newStatus) => {
     handleUpdateStatus(order, newStatus);
+  };
+
+  const handleResetPatientData = async () => {
+    const confirmed = window.confirm(
+      'This will permanently delete every patient account, booking, and related CRM note. Admin accounts and doctor profiles will be preserved. Continue?'
+    );
+    if (!confirmed) return;
+
+    setActionError('');
+    setResettingPatientData(true);
+    try {
+      const response = await API.post('/admin/reset_patient_data');
+      setBookings([]);
+      setBookingNotification(null);
+      knownBookingIds.current = new Set();
+      alert(`${response.data.message} Deleted ${response.data.deleted_bookings} bookings and ${response.data.deleted_patients} patient accounts.`);
+    } catch (err) {
+      setActionError(`Could not clear patient data: ${err.response?.data?.error || err.message}`);
+    } finally {
+      setResettingPatientData(false);
+    }
   };
 
   const handleSaveDoctor = async (e) => {
@@ -279,6 +301,9 @@ export default function Dashboard({ onLogout }) {
               🔔 Enable alerts
             </button>
           )}
+          <button onClick={handleResetPatientData} disabled={resettingPatientData} style={{ background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa', padding: '8px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', cursor: resettingPatientData ? 'wait' : 'pointer' }}>
+            {resettingPatientData ? 'Clearing…' : '🗑 Clear patient data'}
+          </button>
           <button onClick={onLogout} style={{ background: '#fee2e2', color: '#b91c1c', border: '1px solid #fecaca', padding: '8px 14px', borderRadius: '8px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}>Sign Out</button>
         </div>
       </header>

@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       post :cancel_order
       post :request_return
     end
+    post '/admin/reset_patient_data', to: 'admin#reset_patient_data'
   end
   resources :doctors, only: [:index, :show, :create, :destroy]
 end
