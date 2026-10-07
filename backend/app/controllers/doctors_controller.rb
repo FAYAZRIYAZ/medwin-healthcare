@@ -1,5 +1,6 @@
 class DoctorsController < ApplicationController
   skip_before_action :verify_authenticity_token, raise: false
+  before_action :require_admin!, only: %i[create destroy]
 
   def index
     @doctors = Doctor.all.order(created_at: :desc) rescue []
@@ -39,10 +40,10 @@ class DoctorsController < ApplicationController
 
   def destroy
     target_id = params[:id].to_s
-    
+
     # Try finding by exact id, integer id, or string id column match
-    doc = Doctor.find_by(id: target_id) || 
-          Doctor.where("id::text = ?", target_id).first || 
+    doc = Doctor.find_by(id: target_id) ||
+          Doctor.where("id::text = ?", target_id).first ||
           Doctor.where("name ILIKE ?", target_id).first
 
     if doc

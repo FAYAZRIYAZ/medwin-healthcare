@@ -1,7 +1,7 @@
 class AdminController < ApplicationController
-  def reset_patient_data
-    return unless require_admin!
+  before_action :require_admin!
 
+  def reset_patient_data
     deleted_bookings = 0
     deleted_patients = 0
     deleted_notes = 0

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import API from '../api/client';
+import { formatAppointmentDateTime, getVideoCallAvailability, getVideoRoomUrl } from '../utils/appointment';
 
 const TODAY_DATE = new Date().toISOString().slice(0, 10);
 const YESTERDAY_DATE = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
@@ -16,6 +17,7 @@ export default function Dashboard({ onLogout }) {
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [bookingNotification, setBookingNotification] = useState(null);
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
   const [notificationPermission, setNotificationPermission] = useState(
     typeof Notification === 'undefined' ? 'unsupported' : Notification.permission
   );
@@ -121,6 +123,11 @@ export default function Dashboard({ onLogout }) {
     };
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    const interval = setInterval(() => setCurrentTime(Date.now()), 30_000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleUpdateStatus = async (orderOrId, newStatus) => {
     setActionError('');
@@ -451,6 +458,34 @@ export default function Dashboard({ onLogout }) {
                         <td style={{ padding: '14px 16px', maxWidth: '240px' }}>
                           <div style={{ fontWeight: 700, color: '#1e293b' }}>{b.item}</div>
                           <div style={{ fontSize: '11.5px', color: '#16a34a', fontWeight: 800, marginTop: '2px' }}>Billing: {b.amount}</div>
+                          {b.appointment_at && (
+                            <div style={{ fontSize: '11px', color: '#475569', marginTop: '5px' }}>
+                              Appointment: {formatAppointmentDateTime(b.appointment_at)} IST
+                            </div>
+                          )}
+                          {b.patient_problem && (
+                            <div style={{ fontSize: '11px', color: '#475569', marginTop: '5px' }}>
+                              Patient concern: {b.patient_problem}
+                            </div>
+                          )}
+                          {b.consultation_type === 'online' && b.video_room && (
+                            b.status === 'Approved' && getVideoCallAvailability(b.appointment_at, currentTime).available ? (
+                              <a
+                                href={getVideoRoomUrl(b.video_room)}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ display: 'inline-block', marginTop: '7px', color: '#087e8b', fontSize: '11px', fontWeight: 850 }}
+                              >
+                                Join patient video consultation ↗
+                              </a>
+                            ) : (
+                              <div style={{ marginTop: '6px', color: '#64748b', fontSize: '10px' }}>
+                                {b.status === 'Approved'
+                                  ? getVideoCallAvailability(b.appointment_at, currentTime).label
+                                  : 'Video call available after approving appointment'}
+                              </div>
+                            )
+                          )}
                         </td>
                         <td style={{ padding: '14px 16px', fontSize: '12px', color: '#475569', maxWidth: '180px' }}>
                           {b.delivery_address || b.deliveryAddress}

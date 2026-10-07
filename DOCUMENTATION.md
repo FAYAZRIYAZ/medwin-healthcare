@@ -55,7 +55,7 @@ For hosting, set `VITE_API_URL` in the frontend service. The backend uses `DATAB
 4. The patient submits the OTP and a password to `POST /complete_signup`.
 5. The backend checks the OTP, password confirmation, and expiry before returning a JWT.
 
-In development, the OTP is returned as `debug_otp` and written to the Rails log. For free hosted testing only, set `OTP_DEBUG=true` on the backend; the signup screen will display the test OTP. For real phone signup, configure `MSG91_AUTH_KEY` and `MSG91_TEMPLATE_ID` on the backend and use an approved MSG91 OTP template. Disable `OTP_DEBUG` before real use.
+For non-production testing only, `OTP_DEBUG=true` returns the OTP as `debug_otp`; never enable it on a public service. Real phone signup requires `MSG91_AUTH_KEY` and `MSG91_TEMPLATE_ID` and an approved MSG91 OTP template. The signup screen does not provide a fallback or sample OTP if delivery is unavailable.
 
 Completed patient accounts cannot sign up again with the same phone number. Patients who forget their password can select **Forgot password?** on the login screen, receive a new SMS OTP through MSG91, and set a new password after verification.
 
@@ -66,12 +66,16 @@ Completed patient accounts cannot sign up again with the same phone number. Pati
 | POST | `/login` | Authenticate admin or patient |
 | POST | `/send_signup_otp` | Start verified patient signup |
 | POST | `/complete_signup` | Verify OTP and create patient account |
-| GET | `/bookings` | List bookings |
-| POST | `/bookings` | Create a booking |
-| PUT/PATCH | `/bookings/:id` | Update booking status |
+| GET | `/bookings` | List the authenticated patient's own bookings, or all bookings for an admin |
+| POST | `/bookings` | Create a booking for the authenticated account |
+| GET | `/bookings/:id` | Read an owned booking, or any booking for an admin |
+| PUT/PATCH | `/bookings/:id` | Update an owned pending booking, or manage any booking as an admin |
+| GET | `/bookings/doctor_slots` | Read available doctor appointment times |
 | GET | `/doctors` | List the shared doctor roster |
-| POST | `/doctors` | Create a doctor profile |
-| DELETE | `/doctors/:id` | Remove a doctor profile |
+| POST | `/doctors` | Create a doctor profile (admin JWT required) |
+| DELETE | `/doctors/:id` | Remove a doctor profile (admin JWT required) |
+
+Protected booking and admin requests require `Authorization: Bearer <JWT>`. Patient booking queries are scoped to the authenticated account; a caller-supplied phone number does not grant access to another patient's records.
 
 ## 5. Frontend Areas
 
@@ -114,7 +118,7 @@ The WhatsApp action opens a prefilled message. It does not send messages automat
 - Disable `OTP_DEBUG` and remove development OTP responses and logs.
 - Replace development admin passwords.
 - Configure HTTPS and restrictive CORS origins.
-- Add server-side authorization for admin-only doctor, report, and booking actions.
+- Keep server-side JWT authorization enabled for patient booking access and admin-only actions.
 - Configure real payment verification.
 - Build the frontend with `npm run build` and serve the `dist` directory.
 
@@ -134,7 +138,7 @@ npm run dev -- --host 0.0.0.0 --port 5173
 Confirm Rails is running on port `3003` and check:
 
 ```bash
-curl http://localhost:3003/bookings
+curl -H "Authorization: Bearer <JWT>" http://localhost:3003/bookings
 ```
 
 ### Signup OTP errors

@@ -18,6 +18,9 @@ class Api::V1::AuthController < ApplicationController
     end
 
     existing_user = email ? User.find_by("LOWER(email) = ?", email) : User.find_by(phone: phone)
+    if existing_user&.role == "admin"
+      return render json: { error: "Admin accounts cannot use patient signup verification." }, status: :forbidden
+    end
 
     user = existing_user || User.new(email: email, phone: phone, role: "patient")
     user.name = name
@@ -45,6 +48,7 @@ class Api::V1::AuthController < ApplicationController
       user = User.find_by("LOWER(email) = ? OR phone = ?", identifier.downcase, clean_phone)
 
       return render json: { error: "Patient account not found. Request a new OTP to continue." }, status: :not_found unless user
+      return render json: { error: "Admin accounts cannot use patient signup verification." }, status: :forbidden unless user.role == "patient"
       return render json: { error: "Invalid or expired OTP code." }, status: :unauthorized unless user.valid_otp?(otp)
 
       user.clear_otp!
@@ -82,6 +86,7 @@ class Api::V1::AuthController < ApplicationController
     if user.nil?
       return render json: { error: "Session expired. Please request OTP again." }, status: :not_found
     end
+    return render json: { error: "Admin accounts cannot use patient signup verification." }, status: :forbidden unless user.role == "patient"
 
     unless user.valid_otp?(otp)
       return render json: { error: "Invalid or expired OTP code." }, status: :unauthorized
@@ -116,6 +121,7 @@ class Api::V1::AuthController < ApplicationController
 
     user = User.find_by(phone: phone)
     return render json: { error: "No account was found for this mobile number." }, status: :not_found unless user
+    return render json: { error: "Use admin sign-in to manage an admin account." }, status: :forbidden unless user.role == "patient"
 
     otp = user.generate_otp!
     if sms_otp_configured?
@@ -142,6 +148,7 @@ class Api::V1::AuthController < ApplicationController
     user = User.find_by(phone: phone)
 
     return render json: { error: "No account was found for this mobile number." }, status: :not_found unless user
+    return render json: { error: "Use admin sign-in to manage an admin account." }, status: :forbidden unless user.role == "patient"
     return render json: { error: "Invalid or expired OTP code." }, status: :unauthorized unless user.valid_otp?(otp)
     return render json: { error: "Passwords do not match." }, status: :unprocessable_entity unless password == password_confirmation
 

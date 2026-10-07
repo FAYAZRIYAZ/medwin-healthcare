@@ -7,6 +7,9 @@ Rails.application.routes.draw do
   post '/reset_password', to: 'api/v1/auth#reset_password'
 
   resources :bookings, only: [:index, :create, :show, :update] do
+    collection do
+      get :doctor_slots
+    end
     member do
       post :cancel_order
       post :request_return

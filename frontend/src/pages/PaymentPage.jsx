@@ -9,7 +9,7 @@ export default function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { item, customerName, amount, bookingPayload } = location.state || {
+  const { item, customerName, amount, bookingPayload, existingBookingId } = location.state || {
     item: 'Oxygen / Lab Diagnostic Service',
     customerName: 'Valued Patient',
     amount: '₹449',
@@ -45,9 +45,16 @@ export default function PaymentPage() {
         status: 'Pending'
       };
 
-      await API.post('/bookings', new URLSearchParams(finalPayload), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      });
+      const formData = new URLSearchParams(finalPayload);
+      if (existingBookingId) {
+        await API.patch(`/bookings/${existingBookingId}`, formData, {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+      } else {
+        await API.post('/bookings', formData, {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        });
+      }
       navigate('/portal'); // Return patients to their orders after payment confirmation
     } catch (err) {
       const serverError = err.response?.data?.error;
@@ -70,7 +77,23 @@ export default function PaymentPage() {
             <h2 style={{ margin: '6px 0 0 0', fontSize: '18px', color: '#0f172a' }}>Complete Online Payment</h2>
           </div>
           <button
-            onClick={() => navigate('/portal')}
+            onClick={async () => {
+              if (existingBookingId) {
+                try {
+                  await API.patch(`/bookings/${existingBookingId}`, new URLSearchParams({
+                    status: 'Cancelled',
+                    payment_mode: 'Payment cancelled by patient'
+                  }), {
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                  });
+                } catch (err) {
+                  const serverError = err.response?.data?.error;
+                  setError(serverError || 'Could not release the reserved appointment. Please try again.');
+                  return;
+                }
+              }
+              navigate('/portal');
+            }}
             style={{ background: '#f1f5f9', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', cursor: 'pointer', fontWeight: 700, color: '#475569' }}
           >
             ✕ Cancel
